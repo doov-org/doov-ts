@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { GetHtml } from './HtmlCondition';
 import { ValidationRuleMetadata } from '../ValidationRuleMetadata';
 

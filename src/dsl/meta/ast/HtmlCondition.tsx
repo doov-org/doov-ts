@@ -16,10 +16,10 @@ const BinaryBr = (props: HtmlProps) => {
   const op = props.metadata.operator as Operator;
   return (
     <>
-      <GetHtml metadata={left} parents={props.parents} />
+      <GetHtml metadata={left} parent={props.metadata} />
       <br />
       <span className={HtmlClass.CSS_OPERATOR}>{op.readable}</span>&nbsp;
-      <GetHtml metadata={right} parents={props.parents} />
+      <GetHtml metadata={right} parent={props.metadata} />
     </>
   );
 };
@@ -30,95 +30,115 @@ const BinarySpace = (props: HtmlProps) => {
   const op = props.metadata.operator as Operator;
   return (
     <>
-      <GetHtml metadata={left} parents={props.parents} />
+      <GetHtml metadata={left} parent={props.metadata} />
       &nbsp;<span className={HtmlClass.CSS_OPERATOR}>{op.readable}</span>&nbsp;
-      <GetHtml metadata={right} parents={props.parents} />
+      <GetHtml metadata={right} parent={props.metadata} />
     </>
   );
 };
 
 const Binary = (props: HtmlProps) => {
-  const { metadata, parents } = props;
+  const { metadata, parent } = props;
   const op = metadata.operator as Operator;
-  const pmd = parents.length > 1 ? parents[parents.length - 2] : null;
-  const pmdOp = pmd ? pmd.operator : null;
-  const pmdType = pmd ? pmd.type : null;
-  const isLeftChild = pmd ? pmd.children!()[0] === metadata : false;
-  //const parentsClone = [...(props.parents as Metadata[])];
+  const pmdOp = parent ? parent.operator : null;
+  const pmdType = parent ? parent.type : null;
+  const isLeftChild = parent ? parent.children!()[0] === metadata : false;
+  //const parentClone = [...(props.parent as Metadata[])];
   const andOr = [AND, OR];
-  let res;
-  if ((pmdOp === AND || pmdOp === OR) && andOr.includes(op)) {
-    res = (
+  if (pmdOp && (pmdOp !== AND && pmdOp !== OR) && andOr.includes(op)) {
+    return (
       <li className={HtmlClass.CSS_LI_BINARY}>
-        <BinaryBr metadata={metadata} parents={parents} />
+        <BinaryBr metadata={metadata} parent={parent} />
       </li>
     );
   } else if ((pmdOp === AND && op === AND) || (pmdOp === OR && op === OR)) {
-    res = <BinaryBr metadata={metadata} parents={parents} />;
+    return <BinaryBr metadata={metadata} parent={parent} />;
   } else if (pmdOp === AND && op === OR && isLeftChild) {
-    res = <BinaryBr metadata={metadata} parents={parents} />;
+    return <BinaryBr metadata={metadata} parent={parent} />;
   } else if (pmdOp === OR && op === AND && isLeftChild) {
-    res = <BinarySpace metadata={metadata} parents={parents} />;
+    return <BinarySpace metadata={metadata} parent={parent} />;
   } else if (pmdType === 'BINARY' && andOr.includes(op)) {
-    res = (
+    return (
       <ul className={HtmlClass.CSS_UL_BINARY}>
         <li className={HtmlClass.CSS_LI_BINARY}>
-          <BinaryBr metadata={metadata} parents={parents} />
+          <BinaryBr metadata={metadata} parent={parent} />
         </li>
       </ul>
     );
   } else if (pmdType === 'BINARY' && !andOr.includes(op)) {
-    res = <BinaryBr metadata={metadata} parents={parents} />;
+    return <BinarySpace metadata={metadata} parent={parent} />;
   } else if (pmdType === 'NARY' && andOr.includes(op)) {
-    res = (
+    return (
       <li className={HtmlClass.CSS_LI_BINARY}>
-        <BinaryBr metadata={metadata} parents={parents} />
+        <BinaryBr metadata={metadata} parent={parent} />
       </li>
     );
   } else if (pmdType === 'NARY' && !andOr.includes(op)) {
-    res = (
+    return (
       <li className={HtmlClass.CSS_LI_BINARY}>
-        <BinarySpace metadata={metadata} parents={parents} />
+        <BinarySpace metadata={metadata} parent={parent} />
       </li>
     );
   } else if (pmdType === 'UNARY') {
-    res = (
+    return (
       <ul className={HtmlClass.CSS_UL_UNARY}>
-        <BinarySpace metadata={metadata} parents={parents} />
+        <BinarySpace metadata={metadata} parent={parent} />
       </ul>
     );
   } else if (andOr.includes(op)) {
     return (
       <li className={HtmlClass.CSS_LI_BINARY}>
-        <BinaryBr metadata={metadata} parents={parents} />
+        <BinaryBr metadata={metadata} parent={parent} />
       </li>
     );
   } else {
-    res = <BinarySpace metadata={metadata} parents={parents} />;
+    return <BinarySpace metadata={metadata} parent={parent} />;
   }
-  return res;
 };
 
 const Leaf = (props: HtmlProps) => {
-  return <span className={HtmlClass.CSS_VALUE}>{props.metadata.readable}</span>;
+  let mdtype = props.metadata.type;
+  switch (mdtype) {
+    case 'VALUE':
+      return <span className={HtmlClass.CSS_VALUE}>{props.metadata.readable}</span>;
+    case 'FIELD':
+      return <span className={HtmlClass.CSS_FIELD}>{props.metadata.readable}</span>;
+    default:
+      return <span>TO WORK ON</span>;
+  }
+};
+
+const Function = (props: { metadata: Metadata }) => {
+  let { metadata } = props; // is it css_value or css_operator ?
+  if (metadata.operator) return <span className={HtmlClass.CSS_OPERATOR}>{props.metadata.operator!.readable}</span>;
+  else return <span className={HtmlClass.CSS_OPERATOR}>{props.metadata.readable}</span>;
+};
+
+const Nary = (props: HtmlProps) => {
+  const { metadata } = props;
+  const childComponents = metadata.children!().map((e, index) => (
+    <GetHtml key={index} metadata={e} parent={metadata} />
+  ));
+  return (
+    <>
+      <span className={HtmlClass.CSS_NARY}>{metadata.operator!.readable}</span>
+      <ol className={HtmlClass.CSS_OL_NARY}>{childComponents}</ol>
+    </>
+  );
 };
 
 export const GetHtml = (props: HtmlProps) => {
   let res;
-  let { metadata, parents } = props;
-  let parentsCopy = [...parents, metadata];
-  const readable = metadata.readable;
-  console.log(readable);
+  let { metadata, parent } = props;
   switch (metadata.type) {
     case 'UNARY':
       res = <br />;
       break;
     case 'BINARY':
-      console.log('binary');
-      res = <Binary metadata={metadata} parents={parentsCopy} />;
+      return <Binary metadata={metadata} parent={parent} />;
       break;
     case 'NARY':
-      res = <br />;
+      return <Nary metadata={metadata} parent={parent} />;
       break;
     case 'WHEN':
       res = <br />;
@@ -127,11 +147,8 @@ export const GetHtml = (props: HtmlProps) => {
       res = <br />;
       break;
     case 'VALUE':
-      console.log('value');
-      res = <Leaf metadata={metadata} parents={parentsCopy} />;
-      break;
     case 'FIELD':
-      res = <br />;
+      return <Leaf metadata={metadata} parent={parent} />;
       break;
     case 'ITERABLE_VALUE':
       res = <br />;
@@ -149,7 +166,7 @@ export const GetHtml = (props: HtmlProps) => {
       res = <br />;
       break;
     case 'FUNCTION':
-      res = <br />;
+      return <Function metadata={metadata} />;
       break;
     case 'TYPE_CONVERTER':
       res = <br />;
@@ -160,6 +177,6 @@ export const GetHtml = (props: HtmlProps) => {
     default:
       res = <br />;
   }
-  //parents.pop();
+  //parent.pop();
   return res;
 };
