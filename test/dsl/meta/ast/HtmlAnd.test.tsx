@@ -232,6 +232,7 @@ describe('test du and', () => {
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual([
       '<',
       'and',

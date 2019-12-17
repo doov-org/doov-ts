@@ -2,13 +2,87 @@ import * as React from 'react';
 import { Metadata } from '../Metadata';
 import { HtmlClass } from './HtmlSelector';
 import { BinaryMetadata } from '../BinaryMetadata';
-import { AND, OR } from '../../lang/DefaultOperators';
-import { Operator } from '../../Operator';
+import { TypeConverterMetadata } from '../TypeConverterMetadata';
+import { AND, NOT, OR, USING, VALIDATE } from '../../lang/DefaultOperators';
+import { Operator, OperatorReturnType } from '../../Operator';
 
 export interface HtmlProps {
   metadata: Metadata;
   parent?: Metadata;
 }
+
+const andOr = [AND, OR];
+
+const When = (props: HtmlProps) => {
+  const { metadata, parent } = props;
+  const pmdType = parent ? parent!.type : undefined;
+  if (pmdType === 'MULTIPLE_MAPPING') {
+    return (
+      <>
+        <span className={HtmlClass.CSS_WHEN}>{metadata.operator!.readable}</span>
+        <ul className={HtmlClass.CSS_UL_WHEN}>
+          <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+        </ul>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <span className={HtmlClass.CSS_WHEN}>{metadata.operator!.readable}</span>
+        <ul className={HtmlClass.CSS_UL_WHEN}>
+          <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+        </ul>
+        <span className={HtmlClass.CSS_VALIDATE}>{VALIDATE.readable}</span>
+      </>
+    );
+  }
+};
+
+const PrefixUnary = (props: HtmlProps) => {
+  const { metadata } = props;
+  return (
+    <>
+      <span className={HtmlClass.CSS_OPERATOR}>{metadata.operator!.readable}</span>
+      &nbsp;
+      <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+    </>
+  );
+};
+
+const PostfixUnary = (props: HtmlProps) => {
+  const { metadata } = props;
+  return (
+    <>
+      <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+      &nbsp;
+      <span className={HtmlClass.CSS_OPERATOR}>{metadata.operator!.readable}</span>
+    </>
+  );
+};
+
+const Unary = (props: HtmlProps) => {
+  const { metadata, parent } = props;
+  const op = metadata.operator as OperatorReturnType;
+  const pmdOp = parent ? (parent.operator as OperatorReturnType) : undefined;
+  const pmdType = parent ? parent.type : undefined;
+  if ((pmdOp === AND || pmdOp === OR) && op === NOT) {
+    return <PrefixUnary metadata={metadata} parent={parent} />;
+  } else if ((pmdOp !== AND || pmdOp !== OR) && op === NOT) {
+    return (
+      <li className={HtmlClass.CSS_LI_UNARY}>
+        <PrefixUnary metadata={metadata} />
+      </li>
+    );
+  } else if (pmdType === 'NARY') {
+    return (
+      <li className={HtmlClass.CSS_LI_LEAF}>
+        <PostfixUnary metadata={metadata} />
+      </li>
+    );
+  } else {
+    return <PostfixUnary metadata={metadata} parent={parent} />;
+  }
+};
 
 const BinaryBr = (props: HtmlProps) => {
   const right = (props.metadata as BinaryMetadata).right;
@@ -39,12 +113,11 @@ const BinarySpace = (props: HtmlProps) => {
 
 const Binary = (props: HtmlProps) => {
   const { metadata, parent } = props;
-  const op = metadata.operator as Operator;
+  const op = metadata.operator as OperatorReturnType;
   const pmdOp = parent ? parent.operator : null;
   const pmdType = parent ? parent.type : null;
   const isLeftChild = parent ? parent.children!()[0] === metadata : false;
   //const parentClone = [...(props.parent as Metadata[])];
-  const andOr = [AND, OR];
   if (pmdOp && (pmdOp !== AND && pmdOp !== OR) && andOr.includes(op)) {
     return (
       <li className={HtmlClass.CSS_LI_BINARY}>
@@ -97,59 +170,97 @@ const Binary = (props: HtmlProps) => {
 };
 
 const Leaf = (props: HtmlProps) => {
-  let mdtype = props.metadata.type;
-  switch (mdtype) {
+  const { metadata, parent } = props;
+  const mdType = metadata.type;
+  const pmdType = parent ? parent!.type : undefined;
+  let res;
+  switch (mdType) {
     case 'VALUE':
-      return <span className={HtmlClass.CSS_VALUE}>{props.metadata.readable}</span>;
+      res = <span className={HtmlClass.CSS_VALUE}>{props.metadata.readable}</span>;
+      break;
     case 'FIELD':
-      return <span className={HtmlClass.CSS_FIELD}>{props.metadata.readable}</span>;
+      res = <span className={HtmlClass.CSS_FIELD}>{props.metadata.readable}</span>;
+      break;
+    case 'FUNCTION':
+      if (metadata.operator) res = <span className={HtmlClass.CSS_OPERATOR}>{metadata.operator!.readable}</span>;
+      else res = <span className={HtmlClass.CSS_OPERATOR}>{metadata.readable}</span>;
+      break;
     default:
-      return <span>TO WORK ON</span>;
+      res = <span>TO WORK ON</span>;
+  }
+  if (pmdType === 'NARY') {
+    return <li className={HtmlClass.CSS_LI_LEAF}>{res}</li>;
+  } else {
+    return res;
   }
 };
 
-const Function = (props: { metadata: Metadata }) => {
+/*const Function = (props: { metadata: Metadata }) => {
   let { metadata } = props; // is it css_value or css_operator ?
   if (metadata.operator) return <span className={HtmlClass.CSS_OPERATOR}>{props.metadata.operator!.readable}</span>;
   else return <span className={HtmlClass.CSS_OPERATOR}>{props.metadata.readable}</span>;
-};
+};*/
 
 const Nary = (props: HtmlProps) => {
-  const { metadata } = props;
+  const { metadata, parent } = props;
+  //const pmdType = parent ? parent.type : undefined;
+  const pmdRT = parent ? (parent.operator as OperatorReturnType).returnType : undefined;
   const childComponents = metadata.children!().map((e, index) => (
     <GetHtml key={index} metadata={e} parent={metadata} />
   ));
+  if (pmdRT === 'BOOL') {
+    return (
+      <>
+        <span className={HtmlClass.CSS_NARY}>{metadata.operator!.readable}</span>
+        <ol className={HtmlClass.CSS_OL_NARY}>{childComponents}</ol>
+      </>
+    );
+  } else {
+    // d'autres cas sont à ajouter
+    return (
+      <>
+        <li className={HtmlClass.CSS_LI_NARY}>
+          <span className={HtmlClass.CSS_NARY}>{metadata.operator!.readable}</span>
+          <ol className={HtmlClass.CSS_OL_NARY}>{childComponents}</ol>
+        </li>
+      </>
+    );
+  }
+};
+
+const TypeConverter = (props: HtmlProps) => {
+  const { metadata } = props;
+  metadata as TypeConverterMetadata;
   return (
     <>
-      <span className={HtmlClass.CSS_NARY}>{metadata.operator!.readable}</span>
-      <ol className={HtmlClass.CSS_OL_NARY}>{childComponents}</ol>
+      &nbsp;
+      <span className={HtmlClass.CSS_TYPE_CONVERTER}>
+        <span className={HtmlClass.CSS_OPERATOR}>{USING.readable}</span>
+        &nbps;
+        <span className={HtmlClass.CSS_VALUE}>&apos;{metadata.readable}&apos;</span>
+      </span>
     </>
   );
 };
 
 export const GetHtml = (props: HtmlProps) => {
-  let res;
-  let { metadata, parent } = props;
+  let res = <br />;
+  const { metadata, parent } = props;
   switch (metadata.type) {
     case 'UNARY':
-      res = <br />;
-      break;
+      return <Unary metadata={metadata} parent={parent} />;
     case 'BINARY':
       return <Binary metadata={metadata} parent={parent} />;
-      break;
     case 'NARY':
+    case 'MULTIPLE_MAPPING':
+    case 'CONDITIONAL_MAPPING':
       return <Nary metadata={metadata} parent={parent} />;
-      break;
     case 'WHEN':
-      res = <br />;
-      break;
-    case 'VALIDATION':
-      res = <br />;
-      break;
+      return <When metadata={metadata} parent={parent} />;
     case 'VALUE':
     case 'FIELD':
+    case 'FUNCTION':
       return <Leaf metadata={metadata} parent={parent} />;
-      break;
     case 'ITERABLE_VALUE':
       res = <br />;
       break;
@@ -159,23 +270,12 @@ export const GetHtml = (props: HtmlProps) => {
     case 'SINGLE_MAPPING':
       res = <br />;
       break;
-    case 'MULTIPLE_MAPPING':
-      res = <br />;
-      break;
-    case 'CONDITIONAL_MAPPING':
-      res = <br />;
-      break;
-    case 'FUNCTION':
-      return <Function metadata={metadata} />;
-      break;
     case 'TYPE_CONVERTER':
-      res = <br />;
-      break;
+      return <TypeConverter metadata={metadata} />;
+    case 'VALIDATION':
     case 'MULTIPLE_VALIDATIONS':
-      res = <br />;
+      res = <br />; // vérifier si c'est bien le même case
       break;
-    default:
-      res = <br />;
   }
   //parent.pop();
   return res;
