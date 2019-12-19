@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { mount, ReactWrapper } from 'enzyme';
-import { HtmlValidationRule } from '../../../../src/dsl/meta/ast/HtmlValidationRule';
-import { BooleanFunction } from '../../../../src/dsl/lang/BooleanFunction';
 import * as DOOV from '../../../../src/doov';
-import { matchAll, SingleValidationRule, when } from '../../../../src/doov';
-import { HtmlSelector } from '../../../../src/dsl/meta/ast/HtmlSelector';
+import { mount, ReactWrapper } from 'enzyme';
 import { Model, User } from '../../../model';
-//import { HtmlSelector } from "../../../../src/dsl/meta/ast/HtmlSelector";
+import { GetHtml } from '../../../../src/dsl/meta/ast/HtmlRenderer';
+import { HtmlSelector } from '../../../HtmlSelector';
+import { BooleanFunction } from '../../../../src/dsl/lang/BooleanFunction';
+import { matchAll, SingleValidationRule, when } from '../../../../src/doov';
 
 let A, B, C: BooleanFunction;
 let wrapper: ReactWrapper;
@@ -18,7 +17,11 @@ user.name = 'something';
 user.birth = new Date(2019, 11, 11);
 model.user = user;
 
-let getTextArray = (node: ReactWrapper) => node.text();
+const zeroField = DOOV.number(DOOV.field('user', 'id'));
+const yesterdayField = DOOV.date(DOOV.field('user', 'birth'));
+const somethingField = DOOV.string(DOOV.field('user', 'name'));
+
+const getTextArray = (node: ReactWrapper) => node.text();
 
 describe('test du matchAll', () => {
   it('matchAll true true true', () => {
@@ -26,7 +29,7 @@ describe('test du matchAll', () => {
     B = DOOV.lift(BooleanFunction, true);
     C = DOOV.lift(BooleanFunction, true);
     rule = when(matchAll(A, B, C)).validate() as SingleValidationRule;
-    wrapper = mount(<HtmlValidationRule metadata={rule.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
     expect(rule.execute().value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
@@ -36,7 +39,6 @@ describe('test du matchAll', () => {
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
-    //expect(wrapper.find(HtmlSelector.PERCENTAGE_VALUE_DIV).map()).toEqual();
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['true', 'true', 'true']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).map(getTextArray)).toEqual(['match all']);
   });
@@ -45,7 +47,7 @@ describe('test du matchAll', () => {
     B = DOOV.lift(BooleanFunction, true);
     C = DOOV.lift(BooleanFunction, false);
     rule = when(matchAll(A, B, C)).validate() as SingleValidationRule;
-    wrapper = mount(<HtmlValidationRule metadata={rule.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
@@ -55,7 +57,6 @@ describe('test du matchAll', () => {
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
-    //expect(wrapper.find(HtmlSelector.PERCENTAGE_VALUE_DIV).map()).toEqual();
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['true', 'true', 'false']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).map(getTextArray)).toEqual(['match all']);
   });
@@ -64,7 +65,7 @@ describe('test du matchAll', () => {
     B = DOOV.lift(BooleanFunction, false);
     C = DOOV.lift(BooleanFunction, false);
     rule = when(matchAll(A, B, C)).validate() as SingleValidationRule;
-    wrapper = mount(<HtmlValidationRule metadata={rule.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
@@ -74,7 +75,6 @@ describe('test du matchAll', () => {
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
-    //expect(wrapper.find(HtmlSelector.PERCENTAGE_VALUE_DIV).map()).toEqual();
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['true', 'false', 'false']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).map(getTextArray)).toEqual(['match all']);
   });
@@ -83,7 +83,7 @@ describe('test du matchAll', () => {
     B = DOOV.lift(BooleanFunction, false);
     C = DOOV.lift(BooleanFunction, false);
     rule = when(matchAll(A, B, C)).validate() as SingleValidationRule;
-    wrapper = mount(<HtmlValidationRule metadata={rule.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
@@ -93,19 +93,15 @@ describe('test du matchAll', () => {
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
-    //expect(wrapper.find(HtmlSelector.PERCENTAGE_VALUE_DIV).map()).toEqual();
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['false', 'false', 'false']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).map(getTextArray)).toEqual(['match all']);
   });
   it('matchAll field false false false failure', () => {
-    const zeroField = DOOV.number(DOOV.field('user', 'id'));
-    const yesterdayField = DOOV.date(DOOV.field('user', 'birth'));
-    const somethingField = DOOV.string(DOOV.field('user', 'name'));
     A = zeroField.greaterThan(4);
     B = yesterdayField.after(DOOV.DateFunction.today());
     C = somethingField.matches('^other.*');
     rule = when(matchAll(A, B, C)).validate() as SingleValidationRule;
-    wrapper = mount(<HtmlValidationRule metadata={rule.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
     expect(rule.execute(model).value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(3);
@@ -115,7 +111,6 @@ describe('test du matchAll', () => {
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
-    //expect(wrapper.find(HtmlSelector.PERCENTAGE_VALUE_DIV).map()).toEqual();
     expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['>', '>', 'today', 'matches']);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual([
       'user.id',

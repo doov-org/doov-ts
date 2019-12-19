@@ -6,7 +6,6 @@ export type MetadataType =
   | 'VALIDATION'
   | 'VALUE'
   | 'FIELD'
-  | 'ITERABLE_VALUE'
   | 'ITERABLE'
   | 'UNARY'
   | 'BINARY'
