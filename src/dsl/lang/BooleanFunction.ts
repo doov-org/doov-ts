@@ -2,13 +2,27 @@ import { condition, Function } from './Function';
 import { Context } from '../Context';
 import { ContextAccessor } from '../ContextAccessor';
 import { UnaryMetadata } from '../meta/UnaryMetadata';
-import { AND, NOT, OR } from './DefaultOperators';
+import { AND, IS_FALSY, IS_TRUTHY, NOT, OR } from './DefaultOperators';
 import { BinaryMetadata } from '../meta/BinaryMetadata';
 import { ValueMetadata } from '../meta/ValueMetadata';
 
 export class BooleanFunction extends Function<boolean> {
   public static boolean(accessor: ContextAccessor<object, Context, boolean>): BooleanFunction {
     return new BooleanFunction(accessor.metadata, accessor.get, accessor.set);
+  }
+
+  public isFalsy(): BooleanFunction {
+    return new BooleanFunction(
+      new UnaryMetadata(this.metadata, IS_FALSY),
+      condition(this, false, (expr: boolean) => !Boolean(expr), true)
+    );
+  }
+
+  public isTruthy(): BooleanFunction {
+    return new BooleanFunction(
+      new UnaryMetadata(this.metadata, IS_TRUTHY),
+      condition(this, false, (expr: boolean) => Boolean(expr), false)
+    );
   }
 
   public not(): BooleanFunction {

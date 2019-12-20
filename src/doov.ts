@@ -131,7 +131,7 @@ export function matchAny(...values: BooleanFunction[]): BooleanFunction {
   return new BooleanFunction(new NaryMetadata(values.map(value => value.metadata), MATCH_ANY), (obj, ctx) => {
     return values.some(value => {
       const v = value.get(obj, ctx);
-      return v != null ? v : false;
+      return Boolean(v);
     });
   });
 }
@@ -140,7 +140,7 @@ export function matchAll(...values: BooleanFunction[]): BooleanFunction {
   return new BooleanFunction(new NaryMetadata(values.map(value => value.metadata), MATCH_ALL), (obj, ctx) => {
     return values.every(value => {
       const v = value.get(obj, ctx);
-      return v != null ? v : false;
+      return Boolean(v);
     });
   });
 }
@@ -149,7 +149,7 @@ export function matchNone(...values: BooleanFunction[]): BooleanFunction {
   return new BooleanFunction(new NaryMetadata(values.map(value => value.metadata), NONE_MATCH), (obj, ctx) => {
     return values.every(value => {
       const v = value.get(obj, ctx);
-      return v != null ? !v : false;
+      return !Boolean(v);
     });
   });
 }
@@ -158,7 +158,7 @@ export function count(...values: BooleanFunction[]): NumberFunction {
   return new NumberFunction(new NaryMetadata(values.map(value => value.metadata), COUNT), (obj, ctx) => {
     return values.filter(value => {
       const v = value.get(obj, ctx);
-      return v != null ? v : false;
+      return Boolean(v);
     }).length;
   });
 }
@@ -167,7 +167,7 @@ export function sum(...values: NumberFunction[]): NumberFunction {
   return new NumberFunction(new NaryMetadata(values.map(value => value.metadata), SUM), (obj, ctx) => {
     return values.reduce((previous, value) => {
       const v = value.get(obj, ctx);
-      return v != null ? previous + v : previous;
+      return v !== undefined && v !== null && !isNaN(v) ? previous + v : previous;
     }, 0);
   });
 }

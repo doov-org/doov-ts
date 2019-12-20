@@ -11,12 +11,14 @@ const falseFunction = DOOV.lift(BooleanFunction, false);
 const nullField = DOOV.lift(BooleanFunction, null as any);
 const trueField = DOOV.boolean(DOOV.field<boolean, Model>('user', 'b'));
 const undefinedField = DOOV.boolean(DOOV.field<boolean, Model>('user', 'a'));
+const falsyField = DOOV.boolean(DOOV.field<boolean, Model>('user', 'birth'));
 
 beforeEach(() => {
   model = new Model();
   user = new User(1);
   user.name = 'test';
   user.b = true;
+  user.birth = undefined;
   model.user = user;
 });
 
@@ -209,5 +211,26 @@ describe('boolean function with left null with short circuit', () => {
 
   it('not null', () => {
     expect(nullField.not().get(model, new DefaultContext(true))).toEqual(false);
+  });
+
+  it('is falsy', () => {
+    expect(falsyField.isFalsy().get(model, new DefaultContext(true))).toEqual(true);
+    expect(
+      trueFunction
+        .not()
+        .isFalsy()
+        .get(model, new DefaultContext(true))
+    ).toEqual(true);
+  });
+
+  it('is truthy', () => {
+    const context = new DefaultContext(true);
+    expect(trueFunction.isTruthy().get(model, new DefaultContext(true))).toEqual(true);
+    expect(
+      falsyField
+        .not()
+        .isTruthy()
+        .get(model, context)
+    ).toEqual(true);
   });
 });
