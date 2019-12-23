@@ -23,7 +23,7 @@ const somethingField = DOOV.string(DOOV.field('user', 'name'));
 
 const getTextArray = (node: ReactWrapper) => node.text();
 
-describe('test du matchAll', () => {
+describe('tests of matchAll', () => {
   it('matchAll true true true', () => {
     A = DOOV.lift(BooleanFunction, true);
     B = DOOV.lift(BooleanFunction, true);

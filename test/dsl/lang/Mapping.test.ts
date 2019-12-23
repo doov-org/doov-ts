@@ -15,6 +15,7 @@ const id = DOOV.number(DOOV.field<number, Model>('user', 'id'));
 const name = DOOV.string(DOOV.field<string, Model>('user', 'name'));
 const link1 = DOOV.string(DOOV.field<string, Model>('user', 'links', 0));
 const link2 = DOOV.string(DOOV.field<string, Model>('user', 'links', 1));
+const links = DOOV.iterable<string>(DOOV.field<string[], Model>('user', 'birth'));
 
 const reverse = DOOV.converter((obj, input: Function<string>) => {
   const value = input.get(obj);
@@ -57,13 +58,15 @@ beforeEach(() => {
 describe('mappings', () => {
   const mappings = DOOV.mappings(
     DOOV.map(id.mapTo(StringFunction, v => 'link of ' + v)).to(link1),
-    DOOV.map(name).to(link2)
+    DOOV.map(name).to(link2),
+    DOOV.map(['google.com', 'yahoo.fr']).to(links)
   );
 
   it('execute mapping', () => {
     model = mappings.execute(model);
     expect(link1.get(model)).toEqual('link of 1');
     expect(link2.get(model)).toEqual('test');
+    expect(links.get(model)).toEqual(['google.com', 'yahoo.fr']);
   });
 
   it('metadata fields', () => {
@@ -73,6 +76,7 @@ describe('mappings', () => {
     expect(fields).toContainEqual(path(link1.metadata.readable));
     expect(fields).toContainEqual(path(link2.metadata.readable));
     expect(fields).toContainEqual(path(name.metadata.readable));
+    expect(fields).toContainEqual(path(links.metadata.readable));
   });
 });
 

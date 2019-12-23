@@ -25,7 +25,7 @@ const falseField = DOOV.boolean(DOOV.field('user', 'b'));
 
 const getTextArray = (node: ReactWrapper) => node.text();
 
-describe('test du or', function() {
+describe('tests of or', function() {
   it('or true false complex', () => {
     A = DOOV.lift(BooleanFunction, true);
     B = DOOV.lift(BooleanFunction, false);

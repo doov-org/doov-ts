@@ -25,12 +25,12 @@ const falseField = DOOV.boolean(DOOV.field('user', 'b'));
 
 const getTextArray = (node: ReactWrapper) => node.text();
 
-describe('test du and', () => {
+describe('tests of and', () => {
   it('and false false', () => {
     A = DOOV.lift(BooleanFunction, false);
     B = DOOV.lift(BooleanFunction, false);
     rule = when(A.and(B)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);

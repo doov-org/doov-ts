@@ -1,4 +1,5 @@
 export enum HtmlClass {
+  CSS_MULTIPLE_VALIDATIONS = 'dsl-multiple-validations',
   CSS_VALIDATION_RULE = 'dsl-validation-rule',
   CSS_VALIDATE = 'dsl-token-validate',
   CSS_NARY = 'dsl-token-nary',
@@ -9,7 +10,6 @@ export enum HtmlClass {
   CSS_MULTIPLE_MAPPING = 'dsl-token-multiple-mapping',
   CSS_TYPE_CONVERTER = 'dsl-token-type-converter',
   CSS_OPERATOR = 'dsl-token-operator',
-  CSS_TEMPLATE_PARAM = 'dsl-token-template-param',
   CSS_VALUE = 'dsl-token-value',
   CSS_FIELD = 'dsl-token-field',
   CSS_UNKNOWN = 'dsl-token-unknown',

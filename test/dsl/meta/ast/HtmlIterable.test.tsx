@@ -3,9 +3,9 @@ import * as DOOV from '../../../../src/doov';
 import { mount, ReactWrapper } from 'enzyme';
 import { Model, User } from '../../../model';
 import { GetHtml } from '../../../../src/dsl/meta/ast/HtmlRenderer';
-//import { HtmlSelector } from '../../../HtmlSelector';
-import { field, map } from '../../../../src/doov';
+import { HtmlSelector } from '../../../HtmlSelector';
 import { MappingRule } from '../../../../src/dsl/lang/MappingRule';
+import { SingleValidationRule, StringFunction } from '../../../../src/doov';
 
 let wrapper: ReactWrapper;
 let rule: MappingRule;
@@ -15,38 +15,52 @@ let user = new User(0);
 user.links = [];
 model.user = user;
 
-const iterField = DOOV.iterable<string>(field('user', 'links'));
+const iterField = DOOV.iterable(DOOV.field<string[], Model>('user', 'links'));
+const someValue = DOOV.lift(StringFunction, 'gmail.com');
 
-describe('test du iterable', () => {
-  it('iterable 1', () => {
-    const content = ['1', '2', '3'];
-    rule = map(content).to(iterField);
+describe('tests of iterable', () => {
+  it('mapping iterable value', () => {
+    rule = DOOV.map(['google.com', 'yahoo.fr']).to(iterField);
     wrapper = mount(<GetHtml metadata={rule.metadata} />);
-    /*expect(wrapper.find(HtmlSelector.ITERABLE_UL).text()).toEqual("'1' '2' '3'");
+    expect(wrapper.find(HtmlSelector.ITERABLE_UL).text()).toEqual('"google.com""yahoo.fr"');
     expect(
       wrapper
         .find(HtmlSelector.ITERABLE_UL)
         .find('li')
-        .childAt(0)
+        .at(0)
         .text()
-    ).toEqual("'1'");
+    ).toEqual('"google.com"');
     expect(
       wrapper
         .find(HtmlSelector.ITERABLE_UL)
         .find('li')
-        .childAt(1)
+        .at(1)
         .text()
-    ).toEqual("'2'");
+    ).toEqual('"yahoo.fr"');
+  });
+  it('iterableFunction with noneMatch', () => {
+    const rule = DOOV.when(someValue.noneMatch('google.com', 'yahoo.fr')).validate() as SingleValidationRule;
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    console.log(wrapper.html());
+    expect(rule.execute().value).toEqual(true);
+    expect(wrapper.find(HtmlSelector.ITERABLE_UL).text()).toEqual('"google.com""yahoo.fr"');
     expect(
       wrapper
         .find(HtmlSelector.ITERABLE_UL)
         .find('li')
-        .childAt(2)
+        .at(0)
         .text()
-    ).toEqual("'3'");*/
+    ).toEqual('"google.com"');
+    expect(
+      wrapper
+        .find(HtmlSelector.ITERABLE_UL)
+        .find('li')
+        .at(1)
+        .text()
+    ).toEqual('"yahoo.fr"');
   });
 });
 
 afterEach(() => {
-  console.log(rule.metadata.readable + '\n' + wrapper.html());
+  if (rule) console.log(rule.metadata.readable + '\n' + wrapper.html());
 });

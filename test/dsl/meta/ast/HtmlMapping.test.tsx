@@ -28,12 +28,10 @@ const dateField = DOOV.date(DOOV.field<Date, Model>('user', 'birth'));
 const dateField2 = DOOV.date(DOOV.field<Date, Model>('user', 'today'));
 const stringField = DOOV.string(DOOV.field<string, Model>('user', 'name'));
 const stringField2 = DOOV.string(DOOV.field<string, Model>('user', 'name2'));
-/*const linkField0 = DOOV.string(DOOV.field<string, Model>('user', 'links', 0));
-const linkField1 = DOOV.string(DOOV.field<string, Model>('user', 'links', 1));*/
 
 const getTextArray = (node: ReactWrapper) => node.text();
 
-describe('test du mapping', () => {
+describe('tests of mapping', () => {
   it('map to int field ', () => {
     rule = map(18).to(intField);
     wrapper = mount(<GetHtml metadata={rule.metadata} />);

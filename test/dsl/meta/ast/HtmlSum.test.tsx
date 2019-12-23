@@ -20,7 +20,7 @@ const B = DOOV.number(DOOV.field<number, Model>('user', 'id2'));
 
 const getTextArray = (node: ReactWrapper) => node.text();
 
-describe('test du sum', () => {
+describe('tests of sum', () => {
   it('sum 1 1 greaterThan 1', () => {
     rule = when(sum(A, B).greaterThan(1)).validate() as SingleValidationRule;
     wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);

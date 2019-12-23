@@ -10,6 +10,7 @@ export enum HtmlSelector {
   NARY_UL = 'ul.dsl-ul-nary',
   UNARY_LI = 'ul.dsl-li-unary',
   ITERABLE_UL = 'ul.dsl-ul-iterable',
+  MULTIPLE_VALIDATIONS_OL = 'ol.dsl-multiple-validations',
   PERCENTAGE_VALUE_DIV = 'div.percentage-value',
   TOKEN_OPERATOR_SPAN = 'span.dsl-token-operator',
   TOKEN_FIELD_SPAN = 'span.dsl-token-field',

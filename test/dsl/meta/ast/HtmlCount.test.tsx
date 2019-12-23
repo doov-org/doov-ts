@@ -24,7 +24,7 @@ const yesterdayField = DOOV.date(DOOV.field('user', 'birth'));
 
 const getTextArray = (node: ReactWrapper) => node.text();
 
-describe('test du count', () => {
+describe('tests of count', () => {
   it('count false false', () => {
     A = DOOV.lift(BooleanFunction, false);
     B = DOOV.lift(BooleanFunction, false);
