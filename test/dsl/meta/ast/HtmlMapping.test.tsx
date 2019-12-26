@@ -28,10 +28,12 @@ const dateField = DOOV.date(DOOV.field<Date, Model>('user', 'birth'));
 const dateField2 = DOOV.date(DOOV.field<Date, Model>('user', 'today'));
 const stringField = DOOV.string(DOOV.field<string, Model>('user', 'name'));
 const stringField2 = DOOV.string(DOOV.field<string, Model>('user', 'name2'));
+/*const linkField0 = DOOV.string(DOOV.field<string, Model>('user', 'links', 0));
+const linkField1 = DOOV.string(DOOV.field<string, Model>('user', 'links', 1));*/
 
 const getTextArray = (node: ReactWrapper) => node.text();
 
-describe('tests of mapping', () => {
+describe('test du mapping', () => {
   it('map to int field ', () => {
     rule = map(18).to(intField);
     wrapper = mount(<GetHtml metadata={rule.metadata} />);
@@ -47,7 +49,7 @@ describe('tests of mapping', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_THEN_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_ELSE_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_SINGLE_MAPPING_SPAN).length).toEqual(1);
-    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['single_mapping', '->']);
+    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['map', 'to']);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['18']);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual(['user.id']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).length).toEqual(0);
@@ -67,7 +69,7 @@ describe('tests of mapping', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_THEN_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_ELSE_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_SINGLE_MAPPING_SPAN).length).toEqual(1);
-    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['single_mapping', '->']);
+    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['map', 'to']);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['true']);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual(['user.b']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).length).toEqual(0);
@@ -87,7 +89,7 @@ describe('tests of mapping', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_THEN_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_ELSE_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_SINGLE_MAPPING_SPAN).length).toEqual(1);
-    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['single_mapping', '->']);
+    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['map', 'to']);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual([dateString]);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual(['user.birth']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).length).toEqual(0);
@@ -108,12 +110,12 @@ describe('tests of mapping', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_ELSE_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_SINGLE_MAPPING_SPAN).length).toEqual(3);
     expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual([
-      'single_mapping',
-      '->',
-      'single_mapping',
-      '->',
-      'single_mapping',
-      '->',
+      'map',
+      'to',
+      'map',
+      'to',
+      'map',
+      'to',
     ]);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['18', 'true', dateString]);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual(['user.id', 'user.b', 'user.birth']);
@@ -136,7 +138,7 @@ describe('tests of mapping', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_THEN_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_ELSE_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_SINGLE_MAPPING_SPAN).length).toEqual(1);
-    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['single_mapping', 'using', '->']);
+    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['map', 'using', 'to']);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual([dateString, "'date to string'"]);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual(['user.name']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).length).toEqual(0);
@@ -158,12 +160,7 @@ describe('tests of mapping', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_THEN_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_ELSE_SPAN).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.TOKEN_SINGLE_MAPPING_SPAN).length).toEqual(1);
-    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual([
-      'single_mapping',
-      'and',
-      'using',
-      '->',
-    ]);
+    expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual(['map', 'and', 'using', 'to']);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(["'combine names'"]);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual([
       'user.name',
@@ -192,10 +189,10 @@ describe('tests of mapping', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual([
       'age at',
       '>=',
-      'single_mapping',
-      '->',
-      'single_mapping',
-      '->',
+      'map',
+      'to',
+      'map',
+      'to',
     ]);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['18', 'true', 'false']);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual([
@@ -225,10 +222,10 @@ describe('tests of mapping', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual([
       'age at',
       '>=',
-      'single_mapping',
-      '->',
-      'single_mapping',
-      '->',
+      'map',
+      'to',
+      'map',
+      'to',
     ]);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['18', 'true', 'true']);
     expect(wrapper.find(HtmlSelector.TOKEN_FIELD_SPAN).map(getTextArray)).toEqual([

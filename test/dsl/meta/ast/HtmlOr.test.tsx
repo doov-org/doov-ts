@@ -6,6 +6,7 @@ import { GetHtml } from '../../../../src/dsl/meta/ast/HtmlRenderer';
 import { HtmlSelector } from '../../../HtmlSelector';
 import { BooleanFunction } from '../../../../src/dsl/lang/BooleanFunction';
 import { SingleValidationRule, when } from '../../../../src/doov';
+import { Lang } from '../../../../ressources/Localization';
 
 let A, B, C, D: BooleanFunction;
 let wrapper: ReactWrapper;
@@ -31,7 +32,8 @@ describe('tests of or', function() {
     B = DOOV.lift(BooleanFunction, false);
     C = DOOV.lift(BooleanFunction, true);
     rule = when(A.or(B.or(C))).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute().value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
@@ -49,7 +51,8 @@ describe('tests of or', function() {
     B = DOOV.lift(BooleanFunction, true);
     C = DOOV.lift(BooleanFunction, true);
     rule = when(A.or(B.and(C))).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute().value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(2);
@@ -66,7 +69,8 @@ describe('tests of or', function() {
     A = DOOV.lift(BooleanFunction, false);
     B = DOOV.lift(BooleanFunction, false);
     rule = when(A.or(B)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
@@ -84,7 +88,8 @@ describe('tests of or', function() {
     B = DOOV.lift(BooleanFunction, false);
     C = DOOV.lift(BooleanFunction, true);
     rule = when(A.or(B.and(C))).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(2);
@@ -101,7 +106,8 @@ describe('tests of or', function() {
     A = DOOV.lift(BooleanFunction, true);
     B = DOOV.lift(BooleanFunction, false);
     rule = when(A.or(B)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute().value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
@@ -118,7 +124,8 @@ describe('tests of or', function() {
     A = DOOV.lift(BooleanFunction, false);
     B = DOOV.lift(BooleanFunction, true);
     rule = when(A.or(B)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute().value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
@@ -135,7 +142,8 @@ describe('tests of or', function() {
     A = DOOV.lift(BooleanFunction, true);
     B = DOOV.lift(BooleanFunction, true);
     rule = when(A.or(B)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute().value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
@@ -152,7 +160,8 @@ describe('tests of or', function() {
     A = zeroField.lesserThan(4);
     B = yesterdayField.before(DOOV.DateFunction.today());
     rule = when(A.or(B)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute(model).value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
@@ -176,7 +185,8 @@ describe('tests of or', function() {
         .or(C)
         .or(D)
     ).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+
     expect(rule.execute(model).value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);

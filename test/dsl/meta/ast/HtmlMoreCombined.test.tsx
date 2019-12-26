@@ -161,6 +161,14 @@ describe('more combined tests', () => {
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['0', 'false', '0', '0']);
     expect(wrapper.find(HtmlSelector.TOKEN_NARY_SPAN).length).toEqual(0);
   });
+  it('date', () => {
+    rule = DOOV.when(
+      DOOV.DateFunction.today()
+        .minusDays(2)
+        .before(DOOV.DateFunction.tomorrow())
+    ).validate() as SingleValidationRule;
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+  });
 });
 
 afterEach(() => {

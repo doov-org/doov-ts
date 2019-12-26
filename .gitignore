@@ -10,3 +10,4 @@ junit.xml
 coverage
 docs
 *.iml
+*.tgz

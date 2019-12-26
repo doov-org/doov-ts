@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as DOOV from '../../../../src/doov';
+import { count, SingleValidationRule, when } from '../../../../src/doov';
 import { mount, ReactWrapper } from 'enzyme';
 import { Model, User } from '../../../model';
 import { GetHtml } from '../../../../src/dsl/meta/ast/HtmlRenderer';
 import { HtmlSelector } from '../../../HtmlSelector';
 import { BooleanFunction } from '../../../../src/dsl/lang/BooleanFunction';
-import { count, SingleValidationRule, when } from '../../../../src/doov';
 
 let A, B, C, D: BooleanFunction;
 let wrapper: ReactWrapper;
@@ -30,7 +30,7 @@ describe('tests of and', () => {
     A = DOOV.lift(BooleanFunction, false);
     B = DOOV.lift(BooleanFunction, false);
     rule = when(A.and(B)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);

@@ -5,13 +5,21 @@ import { BinaryMetadata } from '../BinaryMetadata';
 import { AND, ELSE, NOT, OR, SINGLE_MAPPING, THEN, TO, USING, VALIDATE, WHEN } from '../../lang/DefaultOperators';
 import { Operator, OperatorReturnType } from '../../Operator';
 import { ValueMetadata } from '../ValueMetadata';
+import { Lang, opStrings } from '../../../../ressources/Localization';
 
 export interface HtmlProps {
   metadata: Metadata;
   parent?: Metadata;
+  lang?: Lang;
 }
 
 const andOr = [AND, OR];
+
+const getStringFromLocale = function(key: string) {
+  const stringValue = opStrings.getString(key, undefined, true);
+  if (stringValue) return stringValue;
+  else return key;
+};
 
 const When = (props: HtmlProps) => {
   const { metadata, parent } = props;
@@ -19,7 +27,7 @@ const When = (props: HtmlProps) => {
   if (pmdType === 'MULTIPLE_MAPPING' || pmdType === 'CONDITIONAL_MAPPING') {
     return (
       <>
-        <span className={HtmlClass.CSS_WHEN}>{metadata.operator!.readable}</span>
+        <span className={HtmlClass.CSS_WHEN}>{getStringFromLocale(metadata.operator!.readable)}</span>
         <ul className={HtmlClass.CSS_UL_WHEN}>
           <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
         </ul>
@@ -28,11 +36,11 @@ const When = (props: HtmlProps) => {
   } else {
     return (
       <>
-        <span className={HtmlClass.CSS_WHEN}>{metadata.operator!.readable}</span>
+        <span className={HtmlClass.CSS_WHEN}>{getStringFromLocale(metadata.operator!.readable)}</span>
         <ul className={HtmlClass.CSS_UL_WHEN}>
           <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
         </ul>
-        <span className={HtmlClass.CSS_VALIDATE}>{VALIDATE.readable}</span>
+        <span className={HtmlClass.CSS_VALIDATE}>{getStringFromLocale(VALIDATE.readable)}</span>
       </>
     );
   }
@@ -42,7 +50,7 @@ const PrefixUnary = (props: HtmlProps) => {
   const { metadata } = props;
   return (
     <>
-      <span className={HtmlClass.CSS_OPERATOR}>{metadata.operator!.readable}</span>
+      <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(metadata.operator!.readable)}</span>
       &nbsp;
       <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
     </>
@@ -55,7 +63,7 @@ const PostfixUnary = (props: HtmlProps) => {
     <>
       <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
       &nbsp;
-      <span className={HtmlClass.CSS_OPERATOR}>{metadata.operator!.readable}</span>
+      <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(metadata.operator!.readable)}</span>
     </>
   );
 };
@@ -94,7 +102,7 @@ const BinaryBr = (props: HtmlProps) => {
     <>
       <GetHtml metadata={left} parent={props.metadata} />
       <br />
-      <span className={HtmlClass.CSS_OPERATOR}>{op.readable}</span>&nbsp;
+      <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(op.readable)}</span>&nbsp;
       <GetHtml metadata={right} parent={props.metadata} />
     </>
   );
@@ -107,7 +115,7 @@ const BinarySpace = (props: HtmlProps) => {
   return (
     <>
       <GetHtml metadata={left} parent={props.metadata} />
-      &nbsp;<span className={HtmlClass.CSS_OPERATOR}>{op.readable}</span>&nbsp;
+      &nbsp;<span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(op.readable)}</span>&nbsp;
       <GetHtml metadata={right} parent={props.metadata} />
     </>
   );
@@ -177,7 +185,7 @@ const Binary = (props: HtmlProps) => {
       <li className={HtmlClass.CSS_LI_BINARY}>
         <BinaryBr metadata={metadata} parent={parent} />
       </li>
-    ); /* templateparam n'existe pas en doov ts */
+    );
   }
   return <BinarySpace metadata={metadata} parent={parent} />;
 };
@@ -195,20 +203,21 @@ const Leaf = (props: HtmlProps) => {
           <ul className={HtmlClass.CSS_UL_ITERABLE}>
             {value.map((e, index) => (
               <li key={index}>
-                <span className={HtmlClass.CSS_VALUE}>{JSON.stringify(e)}</span>
+                <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(JSON.stringify(e))}</span>
               </li>
             ))}
           </ul>
         );
       } else {
-        res = <span className={HtmlClass.CSS_VALUE}>{metadata.readable}</span>;
+        res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(metadata.readable)}</span>;
       }
       break;
     case 'FIELD':
       res = <span className={HtmlClass.CSS_FIELD}>{metadata.readable}</span>;
       break;
     case 'FUNCTION':
-      if (metadata.operator) res = <span className={HtmlClass.CSS_OPERATOR}>{metadata.operator.readable}</span>;
+      if (metadata.operator)
+        res = <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(metadata.operator.readable)}</span>;
       else res = <span className={HtmlClass.CSS_OPERATOR}>{metadata.readable}</span>;
       break;
     default:
@@ -230,11 +239,11 @@ const ConditionalMapping = (props: HtmlProps) => {
     <>
       <div className={HtmlClass.CSS_SINGLE_MAPPING}>
         <GetHtml metadata={whenMeta} parent={metadata} />
-        <span className={HtmlClass.CSS_THEN}>{THEN.readable}</span>
+        <span className={HtmlClass.CSS_THEN}>{getStringFromLocale(THEN.readable)}</span>
         <GetHtml metadata={thenMeta} parent={metadata} />
         {elseMeta && (
           <>
-            <span className={HtmlClass.CSS_ELSE}>{ELSE.readable}</span>
+            <span className={HtmlClass.CSS_ELSE}>{getStringFromLocale(ELSE.readable)}</span>
             <GetHtml metadata={elseMeta} parent={metadata} />
           </>
         )}
@@ -252,7 +261,7 @@ const Nary = (props: HtmlProps) => {
   if (pmdRT === 'BOOL') {
     return (
       <>
-        <span className={HtmlClass.CSS_NARY}>{metadata.operator!.readable}</span>
+        <span className={HtmlClass.CSS_NARY}>{getStringFromLocale(metadata.operator!.readable)}</span>
         <ol className={HtmlClass.CSS_OL_NARY}>{childComponents}</ol>
       </>
     );
@@ -266,7 +275,7 @@ const Nary = (props: HtmlProps) => {
   } else {
     return (
       <li className={HtmlClass.CSS_LI_NARY}>
-        <span className={HtmlClass.CSS_NARY}>{metadata.operator!.readable}</span>
+        <span className={HtmlClass.CSS_NARY}>{getStringFromLocale(metadata.operator!.readable)}</span>
         <ol className={HtmlClass.CSS_OL_NARY}>{childComponents}</ol>
       </li>
     );
@@ -291,11 +300,11 @@ const SingleMapping = (props: HtmlProps) => {
   res = (
     <>
       <span className={HtmlClass.CSS_SINGLE_MAPPING}>
-        <span className={HtmlClass.CSS_OPERATOR}>{SINGLE_MAPPING.readable}</span>
+        <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(SINGLE_MAPPING.readable)}</span>
         &nbsp;
         <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
         &nbsp;
-        <span className={HtmlClass.CSS_OPERATOR}>{TO.readable}</span>
+        <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(TO.readable)}</span>
         &nbsp;
         <GetHtml metadata={metadata.children!()[1]} parent={metadata} />
       </span>
@@ -312,7 +321,7 @@ const TypeConverter = (props: HtmlProps) => {
   return (
     <>
       <span className={HtmlClass.CSS_TYPE_CONVERTER}>
-        <span className={HtmlClass.CSS_VALUE}>&apos;{metadata.readable}&apos;</span>
+        <span className={HtmlClass.CSS_VALUE}>&apos;{getStringFromLocale(metadata.readable)}&apos;</span>
       </span>
     </>
   );
@@ -338,7 +347,8 @@ const MultipleValidations = (props: HtmlProps) => {
 };
 
 export const GetHtml = (props: HtmlProps) => {
-  const { metadata, parent } = props;
+  const { metadata, parent, lang } = props;
+  if (lang) opStrings.setLanguage(lang);
   switch (metadata.type) {
     case 'UNARY':
       return <Unary metadata={metadata} parent={parent} />;
