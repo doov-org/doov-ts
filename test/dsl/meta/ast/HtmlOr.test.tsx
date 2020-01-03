@@ -6,7 +6,7 @@ import { GetHtml } from '../../../../src/dsl/meta/ast/HtmlRenderer';
 import { HtmlSelector } from '../../../HtmlSelector';
 import { BooleanFunction } from '../../../../src/dsl/lang/BooleanFunction';
 import { SingleValidationRule, when } from '../../../../src/doov';
-import { Lang } from '../../../../ressources/Localization';
+import { Lang } from '../../../../src/dsl/meta/ast/language/Localization';
 
 let A, B, C, D: BooleanFunction;
 let wrapper: ReactWrapper;

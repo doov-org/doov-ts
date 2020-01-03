@@ -86,5 +86,6 @@
     "localized-strings": "^0.2.4",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
-  }
+  },
+  "typings": "dist/types/doov.d.ts"
 }

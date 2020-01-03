@@ -6,7 +6,6 @@ import { Model, User } from '../../../model';
 import { GetHtml } from '../../../../src/dsl/meta/ast/HtmlRenderer';
 import { HtmlSelector } from '../../../HtmlSelector';
 import { BooleanFunction } from '../../../../src/dsl/lang/BooleanFunction';
-import { Lang } from '../../../../ressources/Localization';
 
 let A, B, C, D: BooleanFunction;
 let wrapper: ReactWrapper;
@@ -144,7 +143,7 @@ describe('tests of matchAny', () => {
     B = DOOV.lift(BooleanFunction, true);
     C = DOOV.lift(BooleanFunction, true);
     rule = when(matchAny(A, B, C)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} lang={Lang.FR} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
     expect(rule.execute().value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);

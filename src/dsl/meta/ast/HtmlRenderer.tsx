@@ -5,7 +5,7 @@ import { BinaryMetadata } from '../BinaryMetadata';
 import { AND, ELSE, NOT, OR, SINGLE_MAPPING, THEN, TO, USING, VALIDATE, WHEN } from '../../lang/DefaultOperators';
 import { Operator, OperatorReturnType } from '../../Operator';
 import { ValueMetadata } from '../ValueMetadata';
-import { Lang, opStrings } from '../../../../ressources/Localization';
+import { Lang, opStrings } from './language/Localization';
 
 export interface HtmlProps {
   metadata: Metadata;
