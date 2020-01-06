@@ -6,6 +6,7 @@ import { AND, ELSE, NOT, OR, SINGLE_MAPPING, THEN, TO, USING, VALIDATE, WHEN } f
 import { Operator, OperatorReturnType } from '../../Operator';
 import { ValueMetadata } from '../ValueMetadata';
 import { Lang, opStrings } from './language/Localization';
+export { Lang };
 
 export interface HtmlProps {
   metadata: Metadata;
@@ -208,9 +209,11 @@ const Leaf = (props: HtmlProps) => {
             ))}
           </ul>
         );
-      } else {
-        res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(metadata.readable)}</span>;
-      }
+      } else if (value && (value as object).hasOwnProperty('id')) {
+        res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(JSON.parse(metadata.readable).id)}</span>;
+        /*} else if (value instanceof NumberFunction) {
+        res = <GetHtml metadata={value.metadata} parent={metadata} />;*/
+      } else res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(metadata.readable)}</span>;
       break;
     case 'FIELD':
       res = <span className={HtmlClass.CSS_FIELD}>{metadata.readable}</span>;

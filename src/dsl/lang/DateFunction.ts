@@ -408,7 +408,7 @@ export class DateFunction extends Function<Date> {
     };
     if (day instanceof NumberFunction) {
       return new DateFunction(
-        new BinaryMetadata(this.metadata, WITH_DAY_OF_MONTH, new ValueMetadata(day)),
+        new BinaryMetadata(this.metadata, WITH_DAY_OF_MONTH, day.metadata),
         condition(this, day, setDay, null)
       );
     } else {
@@ -426,7 +426,7 @@ export class DateFunction extends Function<Date> {
     };
     if (month instanceof NumberFunction) {
       return new DateFunction(
-        new BinaryMetadata(this.metadata, WITH_MONTH, new ValueMetadata(month)),
+        new BinaryMetadata(this.metadata, WITH_MONTH, month.metadata),
         condition(this, month, setMonth, null)
       );
     } else {
@@ -444,7 +444,7 @@ export class DateFunction extends Function<Date> {
     };
     if (year instanceof NumberFunction) {
       return new DateFunction(
-        new BinaryMetadata(this.metadata, WITH_YEAR, new ValueMetadata(year)),
+        new BinaryMetadata(this.metadata, WITH_YEAR, year.metadata),
         condition(this, year, setYear, null)
       );
     } else {
