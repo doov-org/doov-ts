@@ -29,9 +29,8 @@ describe('tests of validations', () => {
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.MULTIPLE_VALIDATIONS_OL).length).toEqual(1);
-    expect(wrapper.find(HtmlSelector.MULTIPLE_VALIDATIONS_OL).children().length).toEqual(2);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['false', 'false']);
+    expect(wrapper.find('div').length).toEqual(2);
   });
   it('validations complex', () => {
     rule = DOOV.validations(
@@ -47,8 +46,6 @@ describe('tests of validations', () => {
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.MULTIPLE_VALIDATIONS_OL).length).toEqual(1);
-    expect(wrapper.find(HtmlSelector.MULTIPLE_VALIDATIONS_OL).children().length).toEqual(2);
     expect(wrapper.find(HtmlSelector.TOKEN_OPERATOR_SPAN).map(getTextArray)).toEqual([
       'starts with',
       'is defined',
@@ -61,6 +58,7 @@ describe('tests of validations', () => {
       'user.name',
     ]);
     expect(wrapper.find(HtmlSelector.TOKEN_VALUE_SPAN).map(getTextArray)).toEqual(['"B"', '"Bob"']);
+    expect(wrapper.find('div').length).toEqual(2);
   });
 });
 

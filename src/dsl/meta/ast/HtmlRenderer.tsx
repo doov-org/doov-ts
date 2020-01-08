@@ -6,12 +6,19 @@ import { AND, ELSE, NOT, OR, SINGLE_MAPPING, THEN, TO, USING, VALIDATE, WHEN } f
 import { Operator, OperatorReturnType } from '../../Operator';
 import { ValueMetadata } from '../ValueMetadata';
 import { Lang, opStrings } from './language/Localization';
+import { ValidationRule } from '../../lang/ValidationRule';
+import { FunctionMetadata } from '../../../doov';
 export { Lang };
 
 export interface HtmlProps {
   metadata: Metadata;
   parent?: Metadata;
   lang?: Lang;
+}
+
+interface HtmlPropsExtended extends HtmlProps {
+  validations?: ValidationRule[];
+  validation?: ValidationRule;
 }
 
 const andOr = [AND, OR];
@@ -211,16 +218,25 @@ const Leaf = (props: HtmlProps) => {
         );
       } else if (value && (value as object).hasOwnProperty('id')) {
         res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(JSON.parse(metadata.readable).id)}</span>;
-        /*} else if (value instanceof NumberFunction) {
-        res = <GetHtml metadata={value.metadata} parent={metadata} />;*/
       } else res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(metadata.readable)}</span>;
       break;
     case 'FIELD':
       res = <span className={HtmlClass.CSS_FIELD}>{metadata.readable}</span>;
       break;
     case 'FUNCTION':
-      if (metadata.operator)
-        res = <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(metadata.operator.readable)}</span>;
+      const functionMeta = metadata as FunctionMetadata;
+      if (functionMeta.operator) {
+        res = <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(functionMeta.operator.readable)}</span>;
+      } //function with operator
+      else if (functionMeta.readable !== functionMeta.body) {
+        res = (
+          <>
+            <span className={HtmlClass.CSS_FIELD}>{functionMeta.readable}</span>&nbsp;
+            <span className={HtmlClass.CSS_OPERATOR}>:</span>&nbsp;
+            <span className={HtmlClass.CSS_OPERATOR}>{functionMeta.body}</span>
+          </>
+        );
+      } //function with fieldName as readable
       else res = <span className={HtmlClass.CSS_OPERATOR}>{metadata.readable}</span>;
       break;
     default:
@@ -330,8 +346,26 @@ const TypeConverter = (props: HtmlProps) => {
   );
 };
 
-const Validation = (props: HtmlProps) => {
-  const { metadata } = props;
+const Validation = (props: HtmlPropsExtended) => {
+  const { metadata, validation } = props;
+  let span_error_empty;
+  if (validation && validation.hasOwnProperty('errorType')) {
+    let validationAny = validation as any;
+    if (validationAny.errorType === 'ERROR') {
+      span_error_empty = <span className={HtmlClass.CSS_VALUE}>{validationAny.messageFunction.metadata.readable}</span>;
+    } else if (validationAny.errorType === 'EMPTY') {
+      span_error_empty = (
+        <span className={HtmlClass.CSS_OPERATOR}>{validationAny.messageFunction.metadata.readable}</span>
+      );
+    }
+    return (
+      <div className={HtmlClass.CSS_VALIDATION_RULE}>
+        <GetHtml metadata={metadata.children!()[0]} />
+        &nbsp;
+        {span_error_empty}
+      </div>
+    );
+  }
   return (
     <div className={HtmlClass.CSS_VALIDATION_RULE}>
       <GetHtml metadata={metadata.children!()[0]} />
@@ -339,18 +373,16 @@ const Validation = (props: HtmlProps) => {
   );
 };
 
-const MultipleValidations = (props: HtmlProps) => {
-  const { metadata } = props;
+const MultipleValidations = (props: HtmlPropsExtended) => {
+  const { metadata, validations } = props;
   const childComponents = metadata.children!().map((e, index) => (
-    <li key={index}>
-      <GetHtml metadata={e} parent={metadata} />
-    </li>
+    <GetHtml key={index} metadata={e} parent={metadata} validation={validations ? validations![index] : undefined} />
   ));
-  return <ol className={HtmlClass.CSS_MULTIPLE_VALIDATIONS}>{childComponents}</ol>;
+  return <>{childComponents}</>;
 };
 
-export const GetHtml = (props: HtmlProps) => {
-  const { metadata, parent, lang } = props;
+export const GetHtml = (props: HtmlPropsExtended) => {
+  const { metadata, parent, lang, validations, validation } = props;
   if (lang) opStrings.setLanguage(lang);
   switch (metadata.type) {
     case 'UNARY':
@@ -375,8 +407,8 @@ export const GetHtml = (props: HtmlProps) => {
     case 'TYPE_CONVERTER':
       return <TypeConverter metadata={metadata} />;
     case 'VALIDATION':
-      return <Validation metadata={metadata} />;
+      return <Validation metadata={metadata} validation={validation} />;
     case 'MULTIPLE_VALIDATIONS':
-      return <MultipleValidations metadata={metadata} parent={parent} />;
+      return <MultipleValidations metadata={metadata} parent={parent} validations={validations} />;
   }
 };
