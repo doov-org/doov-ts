@@ -14,6 +14,7 @@ export interface HtmlProps {
   metadata: Metadata;
   parent?: Metadata;
   lang?: Lang;
+  fields?: any;
 }
 
 interface HtmlPropsExtended extends HtmlProps {
@@ -29,15 +30,17 @@ const getStringFromLocale = function(key: string) {
   else return key;
 };
 
+//const FieldsReadableContext = React.createContext({fieldsReadable: {} as any});
+
 const When = (props: HtmlProps) => {
-  const { metadata, parent } = props;
+  const { metadata, parent, fields } = props;
   const pmdType = parent ? parent!.type : undefined;
   if (pmdType === 'MULTIPLE_MAPPING' || pmdType === 'CONDITIONAL_MAPPING') {
     return (
       <>
         <span className={HtmlClass.CSS_WHEN}>{getStringFromLocale(metadata.operator!.readable)}</span>
         <ul className={HtmlClass.CSS_UL_WHEN}>
-          <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+          <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} />
         </ul>
       </>
     );
@@ -46,7 +49,7 @@ const When = (props: HtmlProps) => {
       <>
         <span className={HtmlClass.CSS_WHEN}>{getStringFromLocale(metadata.operator!.readable)}</span>
         <ul className={HtmlClass.CSS_UL_WHEN}>
-          <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+          <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} />
         </ul>
         <span className={HtmlClass.CSS_VALIDATE}>{getStringFromLocale(VALIDATE.readable)}</span>
       </>
@@ -55,21 +58,21 @@ const When = (props: HtmlProps) => {
 };
 
 const PrefixUnary = (props: HtmlProps) => {
-  const { metadata } = props;
+  const { metadata, fields } = props;
   return (
     <>
       <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(metadata.operator!.readable)}</span>
       &nbsp;
-      <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+      <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} />
     </>
   );
 };
 
 const PostfixUnary = (props: HtmlProps) => {
-  const { metadata } = props;
+  const { metadata, fields } = props;
   return (
     <>
-      <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+      <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} />
       &nbsp;
       <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(metadata.operator!.readable)}</span>
     </>
@@ -77,28 +80,28 @@ const PostfixUnary = (props: HtmlProps) => {
 };
 
 const Unary = (props: HtmlProps) => {
-  const { metadata, parent } = props;
+  const { metadata, parent, fields } = props;
   const op = metadata.operator as OperatorReturnType;
   const pmdOp = parent ? (parent.operator as OperatorReturnType) : undefined;
   const pmdType = parent ? parent.type : undefined;
   if ((pmdOp === AND || pmdOp === OR) && op === NOT) {
-    return <PrefixUnary metadata={metadata} parent={parent} />;
+    return <PrefixUnary metadata={metadata} parent={parent} fields={fields} />;
   }
   if (pmdOp !== AND && pmdOp !== OR && op === NOT) {
     return (
       <li className={HtmlClass.CSS_LI_UNARY}>
-        <PrefixUnary metadata={metadata} />
+        <PrefixUnary metadata={metadata} fields={fields} />
       </li>
     );
   }
   if (pmdType === 'NARY') {
     return (
       <li className={HtmlClass.CSS_LI_LEAF}>
-        <PostfixUnary metadata={metadata} parent={parent} />
+        <PostfixUnary metadata={metadata} parent={parent} fields={fields} />
       </li>
     );
   } else {
-    return <PostfixUnary metadata={metadata} parent={parent} />;
+    return <PostfixUnary metadata={metadata} parent={parent} fields={fields} />;
   }
 };
 
@@ -106,12 +109,13 @@ const BinaryBr = (props: HtmlProps) => {
   const right = (props.metadata as BinaryMetadata).right;
   const left = (props.metadata as BinaryMetadata).left;
   const op = props.metadata.operator as Operator;
+  const fields = props.fields;
   return (
     <>
-      <GetHtml metadata={left} parent={props.metadata} />
+      <GetHtml metadata={left} parent={props.metadata} fields={fields} />
       <br />
       <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(op.readable)}</span>&nbsp;
-      <GetHtml metadata={right} parent={props.metadata} />
+      <GetHtml metadata={right} parent={props.metadata} fields={fields} />
     </>
   );
 };
@@ -120,128 +124,143 @@ const BinarySpace = (props: HtmlProps) => {
   const right = (props.metadata as BinaryMetadata).right;
   const left = (props.metadata as BinaryMetadata).left;
   const op = props.metadata.operator as Operator;
+  const fields = props.fields;
   return (
     <>
-      <GetHtml metadata={left} parent={props.metadata} />
+      <GetHtml metadata={left} parent={props.metadata} fields={fields} />
       &nbsp;<span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(op.readable)}</span>&nbsp;
-      <GetHtml metadata={right} parent={props.metadata} />
+      <GetHtml metadata={right} parent={props.metadata} fields={fields} />
     </>
   );
 };
 
 const Binary = (props: HtmlProps) => {
-  const { metadata, parent } = props;
+  const { metadata, parent, fields } = props;
   const op = metadata.operator as OperatorReturnType;
   const pmdOp = parent ? parent.operator : null;
   const pmdType = parent ? parent.type : null;
   const isLeftChild = parent ? parent.children!()[0] === metadata : false;
   //const parentClone = [...(props.parent as Metadata[])];
   if (pmdOp === USING) {
-    return <BinarySpace metadata={metadata} parent={parent} />;
+    return <BinarySpace metadata={metadata} parent={parent} fields={fields} />;
   }
   if (pmdOp && (pmdOp !== AND && pmdOp !== OR) && andOr.includes(op)) {
     return (
       <li className={HtmlClass.CSS_LI_BINARY}>
-        <BinaryBr metadata={metadata} parent={parent} />
+        <BinaryBr metadata={metadata} parent={parent} fields={fields} />
       </li>
     );
   }
   if ((pmdOp === AND && op === AND) || (pmdOp === OR && op === OR)) {
-    return <BinaryBr metadata={metadata} parent={parent} />;
+    return <BinaryBr metadata={metadata} parent={parent} fields={fields} />;
   }
   if (pmdOp === AND && op === OR && isLeftChild) {
-    return <BinaryBr metadata={metadata} parent={parent} />;
+    return <BinaryBr metadata={metadata} parent={parent} fields={fields} />;
   }
   if (pmdOp === OR && op === AND && isLeftChild) {
-    return <BinarySpace metadata={metadata} parent={parent} />;
+    return <BinarySpace metadata={metadata} parent={parent} fields={fields} />;
   }
   if (pmdType === 'BINARY' && andOr.includes(op)) {
     return (
       <ul className={HtmlClass.CSS_UL_BINARY}>
         <li className={HtmlClass.CSS_LI_BINARY}>
-          <BinaryBr metadata={metadata} parent={parent} />
+          <BinaryBr metadata={metadata} parent={parent} fields={fields} />
         </li>
       </ul>
     );
   }
   if (pmdType === 'BINARY' && !andOr.includes(op)) {
-    return <BinarySpace metadata={metadata} parent={parent} />;
+    return <BinarySpace metadata={metadata} parent={parent} fields={fields} />;
   }
   if (pmdType === 'NARY' && andOr.includes(op)) {
     return (
       <li className={HtmlClass.CSS_LI_BINARY}>
-        <BinaryBr metadata={metadata} parent={parent} />
+        <BinaryBr metadata={metadata} parent={parent} fields={fields} />
       </li>
     );
   }
   if (pmdType === 'NARY' && !andOr.includes(op)) {
     return (
       <li className={HtmlClass.CSS_LI_BINARY}>
-        <BinarySpace metadata={metadata} parent={parent} />
+        <BinarySpace metadata={metadata} parent={parent} fields={fields} />
       </li>
     );
   }
   if (pmdType === 'UNARY') {
     return (
       <ul className={HtmlClass.CSS_UL_UNARY}>
-        <BinarySpace metadata={metadata} parent={parent} />
+        <BinarySpace metadata={metadata} parent={parent} fields={fields} />
       </ul>
     );
   }
   if (andOr.includes(op)) {
     return (
       <li className={HtmlClass.CSS_LI_BINARY}>
-        <BinaryBr metadata={metadata} parent={parent} />
+        <BinaryBr metadata={metadata} parent={parent} fields={fields} />
       </li>
     );
   }
-  return <BinarySpace metadata={metadata} parent={parent} />;
+  return <BinarySpace metadata={metadata} parent={parent} fields={fields} />;
 };
 
-const Leaf = (props: HtmlProps) => {
+const Value = (props: HtmlProps) => {
   const { metadata, parent } = props;
-  const mdType = metadata.type;
+  const pmdType = parent ? parent!.type : undefined;
+  const value = (metadata as ValueMetadata).value;
+  let res;
+  if (value instanceof Array) {
+    res = (
+      <ul className={HtmlClass.CSS_UL_ITERABLE}>
+        {value.map((e, index) => (
+          <li key={index}>
+            <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(JSON.stringify(e))}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  } else if (value && (value as object).hasOwnProperty('id')) {
+    res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(JSON.parse(metadata.readable).id)}</span>;
+  } else res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(metadata.readable)}</span>;
+  if (pmdType === 'NARY') {
+    return <li className={HtmlClass.CSS_LI_LEAF}>{res}</li>;
+  } else {
+    return res;
+  }
+};
+
+const Field = (props: HtmlProps) => {
+  const { metadata, parent, fields } = props;
   const pmdType = parent ? parent!.type : undefined;
   let res;
-  switch (mdType) {
-    case 'VALUE':
-      const value = (metadata as ValueMetadata).value;
-      if (value instanceof Array) {
-        res = (
-          <ul className={HtmlClass.CSS_UL_ITERABLE}>
-            {value.map((e, index) => (
-              <li key={index}>
-                <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(JSON.stringify(e))}</span>
-              </li>
-            ))}
-          </ul>
-        );
-      } else if (value && (value as object).hasOwnProperty('id')) {
-        res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(JSON.parse(metadata.readable).id)}</span>;
-      } else res = <span className={HtmlClass.CSS_VALUE}>{getStringFromLocale(metadata.readable)}</span>;
-      break;
-    case 'FIELD':
-      res = <span className={HtmlClass.CSS_FIELD}>{metadata.readable}</span>;
-      break;
-    case 'FUNCTION':
-      const functionMeta = metadata as FunctionMetadata;
-      if (functionMeta.operator) {
-        res = <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(functionMeta.operator.readable)}</span>;
-      } //function with operator
-      else if (functionMeta.readable !== functionMeta.body) {
-        res = (
-          <>
-            <span className={HtmlClass.CSS_FIELD}>{functionMeta.readable}</span>&nbsp;
-            <span className={HtmlClass.CSS_OPERATOR}>:</span>&nbsp;
-            <span className={HtmlClass.CSS_OPERATOR}>{functionMeta.body}</span>
-          </>
-        );
-      } //function with fieldName as readable
-      else res = <span className={HtmlClass.CSS_OPERATOR}>{metadata.readable}</span>;
-      break;
-    default:
-      res = <></>;
+  if (fields) {
+    res = <span className={HtmlClass.CSS_FIELD}>{fields[metadata.readable]}</span>;
+  } else res = <span className={HtmlClass.CSS_FIELD}>{metadata.readable}</span>;
+  if (pmdType === 'NARY') {
+    return <li className={HtmlClass.CSS_LI_LEAF}>{res}</li>;
+  } else {
+    return res;
   }
+};
+
+const Function = (props: HtmlProps) => {
+  const { metadata, parent, fields } = props;
+  const pmdType = parent ? parent!.type : undefined;
+  const functionMeta = metadata as FunctionMetadata;
+  let res;
+  if (functionMeta.operator) {
+    res = <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(functionMeta.operator.readable)}</span>;
+  } //function with operator
+  else if (functionMeta.readable !== functionMeta.body) {
+    res = (
+      <>
+        <span className={HtmlClass.CSS_FIELD}>{fields ? fields[functionMeta.readable] : functionMeta.readable}</span>
+        &nbsp;
+        <span className={HtmlClass.CSS_OPERATOR}>:</span>&nbsp;
+        <span className={HtmlClass.CSS_OPERATOR}>{functionMeta.body}</span>
+      </>
+    );
+  } //function with fieldName as readable
+  else res = <span className={HtmlClass.CSS_OPERATOR}>{metadata.readable}</span>;
   if (pmdType === 'NARY') {
     return <li className={HtmlClass.CSS_LI_LEAF}>{res}</li>;
   } else {
@@ -250,20 +269,20 @@ const Leaf = (props: HtmlProps) => {
 };
 
 const ConditionalMapping = (props: HtmlProps) => {
-  const { metadata } = props;
+  const { metadata, fields } = props;
   const whenMeta = metadata.children!()[0];
   const thenMeta = metadata.children!()[1];
   const elseMeta = metadata.children!()[2] ? metadata.children!()[2] : undefined;
   return (
     <>
       <div className={HtmlClass.CSS_SINGLE_MAPPING}>
-        <GetHtml metadata={whenMeta} parent={metadata} />
+        <GetHtml metadata={whenMeta} parent={metadata} fields={fields} />
         <span className={HtmlClass.CSS_THEN}>{getStringFromLocale(THEN.readable)}</span>
-        <GetHtml metadata={thenMeta} parent={metadata} />
+        <GetHtml metadata={thenMeta} parent={metadata} fields={fields} />
         {elseMeta && (
           <>
             <span className={HtmlClass.CSS_ELSE}>{getStringFromLocale(ELSE.readable)}</span>
-            <GetHtml metadata={elseMeta} parent={metadata} />
+            <GetHtml metadata={elseMeta} parent={metadata} fields={fields} />
           </>
         )}
       </div>
@@ -272,10 +291,10 @@ const ConditionalMapping = (props: HtmlProps) => {
 };
 
 const Nary = (props: HtmlProps) => {
-  const { metadata, parent } = props;
+  const { metadata, parent, fields } = props;
   const pmdRT = parent ? (parent.operator ? (parent.operator as OperatorReturnType).returnType : undefined) : undefined;
   const childComponents = metadata.children!().map((e, index) => (
-    <GetHtml key={index} metadata={e} parent={metadata} />
+    <GetHtml key={index} metadata={e} parent={metadata} fields={fields} />
   ));
   if (pmdRT === 'BOOL') {
     return (
@@ -302,17 +321,17 @@ const Nary = (props: HtmlProps) => {
 };
 
 const Iterable = (props: HtmlProps) => {
-  const metadata = props.metadata;
+  const { metadata, fields } = props;
   const childComponents = metadata.children!().map((e, index) => (
     <li key={index}>
-      <GetHtml metadata={e} parent={metadata} />
+      <GetHtml metadata={e} parent={metadata} fields={fields} />
     </li>
   ));
   return <ul className={HtmlClass.CSS_UL_ITERABLE}>{childComponents}</ul>;
 };
 
 const SingleMapping = (props: HtmlProps) => {
-  const { metadata, parent } = props;
+  const { metadata, parent, fields } = props;
   const pmdType = parent ? parent.type : undefined;
   const pmdOp = parent ? parent.operator : undefined;
   let res;
@@ -321,11 +340,11 @@ const SingleMapping = (props: HtmlProps) => {
       <span className={HtmlClass.CSS_SINGLE_MAPPING}>
         <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(SINGLE_MAPPING.readable)}</span>
         &nbsp;
-        <GetHtml metadata={metadata.children!()[0]} parent={metadata} />
+        <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} />
         &nbsp;
         <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(TO.readable)}</span>
         &nbsp;
-        <GetHtml metadata={metadata.children!()[1]} parent={metadata} />
+        <GetHtml metadata={metadata.children!()[1]} parent={metadata} fields={fields} />
       </span>
       &nbsp;
     </>
@@ -347,7 +366,7 @@ const TypeConverter = (props: HtmlProps) => {
 };
 
 const Validation = (props: HtmlPropsExtended) => {
-  const { metadata, validation } = props;
+  const { metadata, validation, fields } = props;
   let span_error_empty;
   if (validation && validation.hasOwnProperty('errorType')) {
     let validationAny = validation as any;
@@ -360,7 +379,7 @@ const Validation = (props: HtmlPropsExtended) => {
     }
     return (
       <div className={HtmlClass.CSS_VALIDATION_RULE}>
-        <GetHtml metadata={metadata.children!()[0]} />
+        <GetHtml metadata={metadata.children!()[0]} fields={fields} />
         &nbsp;
         {span_error_empty}
       </div>
@@ -368,47 +387,55 @@ const Validation = (props: HtmlPropsExtended) => {
   }
   return (
     <div className={HtmlClass.CSS_VALIDATION_RULE}>
-      <GetHtml metadata={metadata.children!()[0]} />
+      <GetHtml metadata={metadata.children!()[0]} fields={fields} />
     </div>
   );
 };
 
 const MultipleValidations = (props: HtmlPropsExtended) => {
-  const { metadata, validations } = props;
+  const { metadata, validations, fields } = props;
   const childComponents = metadata.children!().map((e, index) => (
-    <GetHtml key={index} metadata={e} parent={metadata} validation={validations ? validations![index] : undefined} />
+    <GetHtml
+      key={index}
+      metadata={e}
+      parent={metadata}
+      validation={validations ? validations![index] : undefined}
+      fields={fields}
+    />
   ));
   return <>{childComponents}</>;
 };
 
 export const GetHtml = (props: HtmlPropsExtended) => {
-  const { metadata, parent, lang, validations, validation } = props;
+  const { metadata, parent, lang, validations, validation, fields } = props;
   if (lang) opStrings.setLanguage(lang);
   switch (metadata.type) {
     case 'UNARY':
-      return <Unary metadata={metadata} parent={parent} />;
+      return <Unary metadata={metadata} parent={parent} fields={fields} />;
     case 'BINARY':
-      return <Binary metadata={metadata} parent={parent} />;
+      return <Binary metadata={metadata} parent={parent} fields={fields} />;
     case 'NARY':
     case 'MULTIPLE_MAPPING':
-      return <Nary metadata={metadata} parent={parent} />;
+      return <Nary metadata={metadata} parent={parent} fields={fields} />;
     case 'CONDITIONAL_MAPPING':
-      return <ConditionalMapping metadata={metadata} parent={parent} />;
+      return <ConditionalMapping metadata={metadata} parent={parent} fields={fields} />;
     case 'WHEN':
-      return <When metadata={metadata} parent={parent} />;
+      return <When metadata={metadata} parent={parent} fields={fields} />;
     case 'VALUE':
+      return <Value metadata={metadata} parent={parent} />;
     case 'FIELD':
+      return <Field metadata={metadata} parent={parent} fields={fields} />;
     case 'FUNCTION':
-      return <Leaf metadata={metadata} parent={parent} />;
+      return <Function metadata={metadata} parent={parent} fields={fields} />;
     case 'ITERABLE':
-      return <Iterable metadata={metadata} />;
+      return <Iterable metadata={metadata} fields={fields} />;
     case 'SINGLE_MAPPING':
-      return <SingleMapping metadata={metadata} parent={parent} />;
+      return <SingleMapping metadata={metadata} parent={parent} fields={fields} />;
     case 'TYPE_CONVERTER':
       return <TypeConverter metadata={metadata} />;
     case 'VALIDATION':
-      return <Validation metadata={metadata} validation={validation} />;
+      return <Validation metadata={metadata} validation={validation} fields={fields} />;
     case 'MULTIPLE_VALIDATIONS':
-      return <MultipleValidations metadata={metadata} parent={parent} validations={validations} />;
+      return <MultipleValidations metadata={metadata} parent={parent} validations={validations} fields={fields} />;
   }
 };
