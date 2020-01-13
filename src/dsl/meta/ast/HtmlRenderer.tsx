@@ -2,7 +2,19 @@ import * as React from 'react';
 import { Metadata } from '../Metadata';
 import { HtmlClass } from './HtmlClass';
 import { BinaryMetadata } from '../BinaryMetadata';
-import { AND, ELSE, NOT, OR, SINGLE_MAPPING, THEN, TO, USING, VALIDATE, WHEN } from '../../lang/DefaultOperators';
+import {
+  AND,
+  ELSE,
+  NOT,
+  OR,
+  SINGLE_MAPPING,
+  THEN,
+  TO,
+  USING,
+  VALIDATE,
+  WHEN,
+  FIELD_PROP,
+} from '../../lang/DefaultOperators';
 import { Operator, OperatorReturnType } from '../../Operator';
 import { ValueMetadata } from '../ValueMetadata';
 import { Lang, opStrings } from './language/Localization';
@@ -186,7 +198,7 @@ const Binary = (props: HtmlProps) => {
       </li>
     );
   }
-  if (pmdType === 'UNARY') {
+  if (pmdType === 'UNARY' && metadata.operator !== FIELD_PROP) {
     return (
       <ul className={HtmlClass.CSS_UL_UNARY}>
         <BinarySpace metadata={metadata} parent={parent} fields={fields} />
@@ -269,24 +281,26 @@ const Function = (props: HtmlProps) => {
 };
 
 const ConditionalMapping = (props: HtmlProps) => {
-  const { metadata, fields } = props;
+  const { metadata, parent, fields } = props;
+  const pmdType = parent ? parent!.type : undefined;
   const whenMeta = metadata.children!()[0];
   const thenMeta = metadata.children!()[1];
   const elseMeta = metadata.children!()[2] ? metadata.children!()[2] : undefined;
-  return (
-    <>
-      <div className={HtmlClass.CSS_SINGLE_MAPPING}>
+  if (pmdType === 'MULTIPLE_MAPPING') {
+    return (
+      <li className={HtmlClass.CSS_LI_NARY}>
         <GetHtml metadata={whenMeta} parent={metadata} fields={fields} />
-        <span className={HtmlClass.CSS_THEN}>{getStringFromLocale(THEN.readable)}</span>
         <GetHtml metadata={thenMeta} parent={metadata} fields={fields} />
-        {elseMeta && (
-          <>
-            <span className={HtmlClass.CSS_ELSE}>{getStringFromLocale(ELSE.readable)}</span>
-            <GetHtml metadata={elseMeta} parent={metadata} fields={fields} />
-          </>
-        )}
-      </div>
-    </>
+        {elseMeta && <GetHtml metadata={elseMeta} parent={metadata} fields={fields} />}
+      </li>
+    );
+  }
+  return (
+    <div className={HtmlClass.CSS_SINGLE_MAPPING}>
+      <GetHtml metadata={whenMeta} parent={metadata} fields={fields} />
+      <GetHtml metadata={thenMeta} parent={metadata} fields={fields} />
+      {elseMeta && <GetHtml metadata={elseMeta} parent={metadata} fields={fields} />}
+    </div>
   );
 };
 
@@ -305,6 +319,22 @@ const Nary = (props: HtmlProps) => {
     );
   }
   if (metadata.type === 'MULTIPLE_MAPPING') {
+    if (metadata.operator === THEN) {
+      return (
+        <>
+          <span className={HtmlClass.CSS_THEN}>{getStringFromLocale(THEN.readable)}</span>
+          <ul className={HtmlClass.CSS_OL_NARY}>{childComponents}</ul>
+        </>
+      );
+    }
+    if (metadata.operator === ELSE) {
+      return (
+        <>
+          <span className={HtmlClass.CSS_ELSE}>{getStringFromLocale(ELSE.readable)}</span>
+          <ul className={HtmlClass.CSS_OL_NARY}>{childComponents}</ul>
+        </>
+      );
+    }
     if (metadata.children!().filter(e => e.operator === WHEN).length == 1) {
       return <div className={HtmlClass.CSS_SINGLE_MAPPING}>{childComponents}</div>;
     } else {
