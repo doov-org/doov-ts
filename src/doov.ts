@@ -238,5 +238,4 @@ export { DateUtils };
 export { Utils };
 export { Paths };
 
-export { GetHtml, Lang } from './dsl/meta/ast/HtmlRenderer';
 export { FIELD_PROP } from './dsl/lang/DefaultOperators';
