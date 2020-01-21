@@ -375,12 +375,12 @@ export class DateFunction extends Function<Date> {
   public static nbFullMonthsBetween(value: DateFunction, value2: Date | DateFunction): NumberFunction {
     if (value2 instanceof DateFunction) {
       return new NumberFunction(
-        new BinaryMetadata(value.metadata, NB_OF_MONTHS_BETWEEN, value2.metadata),
+        new NaryMetadata([value.metadata, value2.metadata], NB_OF_MONTHS_BETWEEN),
         condition(value, value2, (left: Date, right: Date) => numberOfFullMonthsBetween(left, right), null)
       );
     } else {
       return new NumberFunction(
-        new BinaryMetadata(value.metadata, NB_OF_MONTHS_BETWEEN, new ValueMetadata(value2)),
+        new NaryMetadata([value.metadata, new ValueMetadata(value2)], NB_OF_MONTHS_BETWEEN),
         condition(value, value2, numberOfFullMonthsBetween, null)
       );
     }
@@ -389,12 +389,12 @@ export class DateFunction extends Function<Date> {
   public static nbFullYearsBetween(value: DateFunction, value2: Date | DateFunction): NumberFunction {
     if (value2 instanceof DateFunction) {
       return new NumberFunction(
-        new BinaryMetadata(value.metadata, NB_OF_YEARS_BETWEEN, value2.metadata),
+        new NaryMetadata([value.metadata, value2.metadata], NB_OF_YEARS_BETWEEN),
         condition(value, value2, numberOfFullYearsBetween, null)
       );
     } else {
       return new NumberFunction(
-        new BinaryMetadata(value.metadata, NB_OF_YEARS_BETWEEN, new ValueMetadata(value2)),
+        new NaryMetadata([value.metadata, new ValueMetadata(value2)], NB_OF_YEARS_BETWEEN),
         condition(value, value2, numberOfFullYearsBetween, null)
       );
     }

@@ -212,6 +212,7 @@ export { ValidationRule } from './dsl/lang/ValidationRule';
 export { SingleValidationRule } from './dsl/lang/SingleValidationRule';
 export { Validations } from './dsl/lang/Validations';
 export { Result } from './dsl/Result';
+export { MappingRule } from './dsl/lang/MappingRule';
 
 // Metadata
 export { AbstractMetadata } from './dsl/meta/AbstractMetadata';
@@ -235,3 +236,5 @@ export { MetadataUtils };
 export { DateUtils };
 export { Utils };
 export { Paths };
+
+export { FIELD_PROP } from './dsl/lang/DefaultOperators';
