@@ -22,7 +22,8 @@ export enum HtmlClass {
   CSS_UL_BINARY = 'dsl-ul-binary',
   CSS_UL_UNARY = 'dsl-ul-unary',
   CSS_UL_ITERABLE = 'dsl-ul-iterable',
+  CSS_UL_NARY = 'dsl-ul-nary',
+  CSS_UL_MAPPING_NARY = 'dsl-ul-mapping-nary',
 
   CSS_OL_NARY = 'dsl-ol-nary',
-  CSS_OL_MAPPING_NARY = 'dsl-ol-mapping-nary',
 }
