@@ -48,6 +48,11 @@ const getStringFromLocale = function(key: string) {
   else return key;
 };
 
+const getFieldReadable = function(id: string, fields: any) {
+  if (fields[id]) return fields[id];
+  return id;
+};
+
 //const FieldsReadableContext = React.createContext({fieldsReadable: {} as any});
 
 const When = (props: HtmlProps) => {
@@ -76,21 +81,21 @@ const When = (props: HtmlProps) => {
 };
 
 const PrefixUnary = (props: HtmlProps) => {
-  const { metadata, fields, grandParent } = props;
+  const { metadata, fields } = props;
   return (
     <>
       <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(metadata.operator!.readable)}</span>
       &nbsp;
-      <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} grandParent={grandParent} />
+      <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} />
     </>
   );
 };
 
 const PostfixUnary = (props: HtmlProps) => {
-  const { metadata, fields, grandParent } = props;
+  const { metadata, fields } = props;
   return (
     <>
-      <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} grandParent={grandParent} />
+      <GetHtml metadata={metadata.children!()[0]} parent={metadata} fields={fields} />
       &nbsp;
       <span className={HtmlClass.CSS_OPERATOR}>{getStringFromLocale(metadata.operator!.readable)}</span>
     </>
@@ -99,17 +104,17 @@ const PostfixUnary = (props: HtmlProps) => {
 
 const Unary = (props: HtmlProps) => {
   const prefixOp = [DATE_OF, MONTH_OF, YEAR_OF, NB_OF_MONTHS_SINCE, POSITION];
-  const { metadata, parent, fields, grandParent } = props;
+  const { metadata, parent, fields } = props;
   const op = metadata.operator as OperatorReturnType;
   const pmdOp = parent ? (parent.operator as OperatorReturnType) : undefined;
   const pmdType = parent ? parent.type : undefined;
   if ((pmdOp === AND || pmdOp === OR) && op === NOT) {
-    return <PrefixUnary metadata={metadata} parent={parent} fields={fields} grandParent={grandParent} />;
+    return <PrefixUnary metadata={metadata} parent={parent} fields={fields} />;
   }
   if (pmdOp !== AND && pmdOp !== OR && op === NOT) {
     return (
       <li className={HtmlClass.CSS_LI_UNARY}>
-        <PrefixUnary metadata={metadata} fields={fields} grandParent={grandParent} />
+        <PrefixUnary metadata={metadata} fields={fields} />
       </li>
     );
   }
@@ -117,19 +122,18 @@ const Unary = (props: HtmlProps) => {
     if (prefixOp.includes(op)) {
       return (
         <li className={HtmlClass.CSS_LI_LEAF}>
-          <PrefixUnary metadata={metadata} parent={parent} fields={fields} grandParent={grandParent} />
+          <PrefixUnary metadata={metadata} parent={parent} fields={fields} />
         </li>
       );
     }
     return (
       <li className={HtmlClass.CSS_LI_LEAF}>
-        <PostfixUnary metadata={metadata} parent={parent} fields={fields} grandParent={grandParent} />
+        <PostfixUnary metadata={metadata} parent={parent} fields={fields} />
       </li>
     );
   } else {
-    if (prefixOp.includes(op))
-      return <PrefixUnary metadata={metadata} parent={parent} fields={fields} grandParent={grandParent} />;
-    return <PostfixUnary metadata={metadata} parent={parent} fields={fields} grandParent={grandParent} />;
+    if (prefixOp.includes(op)) return <PrefixUnary metadata={metadata} parent={parent} fields={fields} />;
+    return <PostfixUnary metadata={metadata} parent={parent} fields={fields} />;
   }
 };
 
@@ -270,7 +274,7 @@ const Field = (props: HtmlProps) => {
   const pmdType = parent ? parent!.type : undefined;
   let res;
   if (fields) {
-    res = <span className={HtmlClass.CSS_FIELD}>{fields[metadata.readable]}</span>;
+    res = <span className={HtmlClass.CSS_FIELD}>{getFieldReadable(metadata.readable, fields)}</span>;
   } else res = <span className={HtmlClass.CSS_FIELD}>{metadata.readable}</span>;
   if (pmdType === 'NARY') {
     return <li className={HtmlClass.CSS_LI_LEAF}>{res}</li>;
@@ -355,9 +359,9 @@ const Nary = (props: HtmlProps) => {
     if (metadata.children!().filter(e => e.operator === WHEN).length == 1) {
       return <div className={HtmlClass.CSS_SINGLE_MAPPING}>{childComponents}</div>;
     } else {
-      return <ul className={HtmlClass.CSS_UL_MAPPING_NARY}>{childComponents}</ul>; // cohérence nom de la classe
+      return <ul className={HtmlClass.CSS_UL_MAPPING_NARY}>{childComponents}</ul>;
     }
-  } else if (pmdType === 'WHEN') {
+  } else if (pmdType === 'WHEN' || pmdType === 'NARY') {
     return (
       <li className={HtmlClass.CSS_LI_NARY}>
         <span className={HtmlClass.CSS_NARY}>{getStringFromLocale(metadata.operator!.readable)}</span>
@@ -366,12 +370,10 @@ const Nary = (props: HtmlProps) => {
     );
   }
   return (
-    <ul className={HtmlClass.CSS_UL_NARY}>
-      <li className={HtmlClass.CSS_LI_NARY}>
-        <span className={HtmlClass.CSS_NARY}>{getStringFromLocale(metadata.operator!.readable)}</span>
-        <ol className={HtmlClass.CSS_OL_NARY}>{childComponents}</ol>
-      </li>
-    </ul>
+    <>
+      <span className={HtmlClass.CSS_NARY}>{getStringFromLocale(metadata.operator!.readable)}</span>
+      <ol className={HtmlClass.CSS_OL_NARY}>{childComponents}</ol>
+    </>
   );
 };
 

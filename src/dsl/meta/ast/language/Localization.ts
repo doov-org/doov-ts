@@ -222,5 +222,6 @@ export let opStrings = new LocalizedStrings({
     'is disabled feature': 'est une fonctionnalité désactivée',
     'date range': 'intervalle de dates',
     'is in range': "est dans l'intervalle de dates",
+    device: 'appareil',
   },
 });
