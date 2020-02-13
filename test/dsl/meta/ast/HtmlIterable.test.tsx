@@ -40,7 +40,7 @@ describe('tests of iterable', () => {
   });
   it('iterableFunction with noneMatch', () => {
     const rule = DOOV.when(someValue.noneMatch('google.com', 'yahoo.fr')).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     console.log(wrapper.html());
     expect(rule.execute().value).toEqual(true);
     expect(wrapper.find(HtmlSelector.ITERABLE_UL).text()).toEqual('"google.com""yahoo.fr"');

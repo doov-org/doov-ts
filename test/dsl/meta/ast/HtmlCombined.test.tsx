@@ -29,13 +29,13 @@ describe('combined tests', () => {
     B = DOOV.lift(BooleanFunction, false);
     C = DOOV.lift(BooleanFunction, false);
     rule = DOOV.when(DOOV.matchAll(A, B, C)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(3);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -46,13 +46,13 @@ describe('combined tests', () => {
     A = DOOV.lift(BooleanFunction, true);
     B = DOOV.lift(BooleanFunction, false);
     rule = DOOV.when(A.and(B)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute().value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -61,13 +61,13 @@ describe('combined tests', () => {
   });
   it('reduce zeroInt', () => {
     rule = DOOV.when(zeroField.notEq(0)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -77,13 +77,13 @@ describe('combined tests', () => {
   });
   it('reduce links', () => {
     rule = DOOV.when(links.contains('c')).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -94,13 +94,13 @@ describe('combined tests', () => {
   it('reduce undefined', () => {
     A = DOOV.date(DOOV.field('user', 'birth'));
     rule = DOOV.when(A.isUndefined()).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -112,13 +112,13 @@ describe('combined tests', () => {
     rule = DOOV.when(
       stringField1.matches('^some.*').or(stringField2.matches('^other.*'))
     ).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);

@@ -32,13 +32,13 @@ describe('more combined tests', () => {
         .or(dateField.ageAt(dateField).greaterOrEquals(0))
         .and(DOOV.sum(zeroField, zeroField).lesserThan(0))
     ).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(2);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -70,13 +70,13 @@ describe('more combined tests', () => {
         .and(DOOV.matchAny(boolField.eq(true), boolField.not().and(zeroField.between(0, 1))))
         .and(zeroField.eq(1))
     ).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(3);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -126,13 +126,13 @@ describe('more combined tests', () => {
             .and(dateField.ageAt(dateField).greaterOrEquals(0))
         )
     ).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(0);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -167,7 +167,7 @@ describe('more combined tests', () => {
         .minusDays(2)
         .before(DOOV.DateFunction.tomorrow())
     ).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
   });
 });
 

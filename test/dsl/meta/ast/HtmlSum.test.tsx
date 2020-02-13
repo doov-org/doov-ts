@@ -23,13 +23,13 @@ const getTextArray = (node: ReactWrapper) => node.text();
 describe('tests of sum', () => {
   it('sum 1 1 greaterThan 1', () => {
     rule = when(sum(A, B).greaterThan(1)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(true);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(2);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -40,13 +40,13 @@ describe('tests of sum', () => {
   });
   it('sum 1 1 greaterThan 3', () => {
     rule = when(sum(A, B).greaterThan(3)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(2);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
@@ -57,13 +57,13 @@ describe('tests of sum', () => {
   });
   it('sum sum 1 sum 2 greaterThan 3', () => {
     rule = when(sum(sum(A), sum(B)).greaterThan(3)).validate() as SingleValidationRule;
-    wrapper = mount(<GetHtml metadata={rule.metadata.when.metadata} />);
+    wrapper = mount(<GetHtml metadata={rule.metadata} />);
     expect(rule.execute(model).value).toEqual(false);
     expect(wrapper.find(HtmlSelector.NARY_OL).length).toEqual(3);
     expect(wrapper.find(HtmlSelector.BINARY_LI).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.NARY_LI).length).toEqual(2);
     expect(wrapper.find(HtmlSelector.LEAF_LI).length).toEqual(2);
-    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(0);
+    expect(wrapper.find(HtmlSelector.WHEN_UL).length).toEqual(1);
     expect(wrapper.find(HtmlSelector.BINARY_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.BINARYCHILD_UL).length).toEqual(0);
     expect(wrapper.find(HtmlSelector.UNARY_UL).length).toEqual(0);
