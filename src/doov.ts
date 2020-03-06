@@ -237,4 +237,4 @@ export { DateUtils };
 export { Utils };
 export { Paths };
 
-export { FIELD_PROP } from './dsl/lang/DefaultOperators';
+export * from './dsl/lang/DefaultOperators';
