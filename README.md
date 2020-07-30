@@ -3,8 +3,8 @@
 dOOv (Domain Object Oriented Validation) a fluent API for type-safe bean validation and mapping in TypeScript
 
 [![npm version](https://img.shields.io/npm/v/doov.svg?style=flat&color=blue)](https://www.npmjs.com/package/doov)
-[![Build Status](https://travis-ci.org/doov-io/doov-ts.svg?branch=master)](https://travis-ci.org/doov-io/doov-ts)
-[![codecov](https://codecov.io/gh/doov-io/doov-ts/branch/master/graph/badge.svg)](https://codecov.io/gh/doov-io/doov-ts)
+[![Build Status](https://travis-ci.org/doov-org/doov-ts.svg?branch=master)](https://travis-ci.org/doov-org/doov-ts)
+[![codecov](https://codecov.io/gh/doov-org/doov-ts/branch/master/graph/badge.svg)](https://codecov.io/gh/doov-org/doov-ts)
 
 ## Local Development
 

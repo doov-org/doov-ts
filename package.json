@@ -2,7 +2,7 @@
   "name": "doov",
   "version": "0.11.0",
   "desciption": "dOOv (Domain Object Oriented Validation) a fluent API for type-safe bean validation and mapping",
-  "homepage": "https://doov.io",
+  "homepage": "https://doov.org",
   "license": "Apache-2.0",
   "maintainers": [
     {
@@ -13,7 +13,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/doov-io/doov-ts.git"
+    "url": "git://github.com/doov-org/doov-ts.git"
   },
   "source": "src/doov.ts",
   "main": "dist/doov.js",
